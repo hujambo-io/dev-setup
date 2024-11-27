@@ -3,6 +3,11 @@
 # Exit on errors
 set -e
 
+echo "Creating development environment directory structure..."
+mkdir -p ~/Developer/{01-ToSync/{01-10-Learn,01-20-Tools,01-50-Projects,01-70-VirtualEnvs},05-SyncSelected/{05-10-Learn,05-20-Tools,05-50-Projects,05-70-VirtualEnvs},09-NoSync/{09-10-Learn,09-20-Tools,09-50-Projects,09-70-VirtualEnvs}}
+echo "Development environment directories created."
+
+
 echo "Starting development environment setup..."
 
 # Check for Homebrew and install if not found
@@ -55,6 +60,9 @@ if [ -s "/opt/homebrew/opt/nvm/nvm.sh" ]; then
 else
   echo "Warning: NVM script not found. Ensure NVM is installed properly."
 fi
+
+
+conda init zsh
 
 # Install Node.js (LTS)
 echo "Installing Node.js via NVM..."
