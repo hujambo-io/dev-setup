@@ -13,9 +13,9 @@ brew "jq"               # JSON processor
 brew "nvm"              # Node Version Manager
 
 # Development Tools
+cask "docker"
 brew "python"           # Python (latest 3.x version)
 cask "miniconda"
-cask "dart-sdk"
 cask "flutter"
 brew "ffmpeg"           # Video processing
 brew "docker"           # Containerization
