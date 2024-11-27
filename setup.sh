@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/zsh
 
-# Exit on errors for critical steps but allow continued execution for non-critical ones
+# Exit on errors
 set -e
 
 echo "Starting development environment setup..."
