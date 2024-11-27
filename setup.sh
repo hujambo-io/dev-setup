@@ -50,6 +50,23 @@ echo "Installing Node.js via NVM..."
 nvm install --lts
 nvm use --lts
 
+
+# Install SDKMAN
+if ! command -v sdk &>/dev/null; then
+  echo "Installing SDKMAN..."
+  curl -s "https://get.sdkman.io" | bash
+  echo 'export SDKMAN_DIR="$HOME/.sdkman"' >> ~/.zshrc
+  echo '[[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"' >> ~/.zshrc
+  source ~/.zshrc
+else
+  echo "SDKMAN already installed."
+fi
+
+
+
+
+
+
 # Cleanup
 echo "Cleaning up..."
 brew cleanup
