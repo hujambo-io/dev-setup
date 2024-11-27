@@ -14,10 +14,9 @@ brew "nvm"              # Node Version Manager
 
 # Development Tools
 brew "python"           # Python (latest 3.x version)
-brew "miniconda"        # Conda environment manager
-tap "dart-lang/dart"    # Dart requires a specific tap
-brew "dart"             # Flutter language
-brew "flutter"          # Flutter SDK
+brew install --cask miniconda
+brew install dart-sdk
+brew install --cask flutter
 brew "ffmpeg"           # Video processing
 brew "docker"           # Containerization
 
@@ -25,13 +24,13 @@ brew "docker"           # Containerization
 brew "protobuf"         # Protocol buffers
 
 # Mobile Development Tools
-brew "android-platform-tools"  # ADB & fastboot
-brew "android-sdk"             # Android SDK (includes sdkmanager)
-brew "android-studio"          # IDE for Android
+brew install --cask android-platform-tools
+brew install --cask android-sdk
+brew install --cask android-studio
 
 # Browsers
-cask "google-chrome"           # Default browser
-cask "firefox"                 # Alternative browser
+brew install --cask google-chrome
+brew install --cask firefox
 cask "microsoft-edge"          # Alternative browser for testing
 
 # GUI Applications
@@ -47,6 +46,5 @@ brew "httpie"                  # User-friendly HTTP client
 brew "selenium-server"         # Selenium for browser testing
 
 # Fonts (for better coding experience)
-tap "homebrew/cask-fonts"
-cask "font-fira-code"          # Coding font with ligatures
+brew install --cask font-fira-code
 

@@ -20,14 +20,24 @@ fi
 echo "Updating Homebrew..."
 brew update
 
-# Fetch and use the Brewfile from the repository
-BREWFILE_URL="https://raw.githubusercontent.com/<your-username>/<repo-name>/main/Brewfile"
-echo "Fetching Brewfile..."
-curl -fsSL "$BREWFILE_URL" -o /tmp/Brewfile
+# Clone the repository containing the Brewfile
+REPO_URL="https://github.com/hujambo-io/dev-setup.git"
+TEMP_DIR=$(mktemp -d)
+echo "Cloning Brewfile repository..."
+git clone "$REPO_URL" "$TEMP_DIR"
 
 # Install all tools and applications from the Brewfile
-echo "Installing tools and applications from Brewfile..."
-brew bundle --file=/tmp/Brewfile
+BREWFILE_PATH="$TEMP_DIR/Brewfile"
+if [ -f "$BREWFILE_PATH" ]; then
+  echo "Installing tools and applications from Brewfile..."
+  brew bundle --file="$BREWFILE_PATH"
+else
+  echo "Error: Brewfile not found in the repository."
+  exit 1
+fi
+
+# Cleanup temporary directory
+rm -rf "$TEMP_DIR"
 
 # Configure NVM
 echo "Configuring NVM..."
