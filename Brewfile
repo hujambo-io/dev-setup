@@ -18,7 +18,6 @@ brew "python"           # Python (latest 3.x version)
 cask "miniconda"
 cask "flutter"
 brew "ffmpeg"           # Video processing
-brew "docker"           # Containerization
 
 # AI/ML Libraries and Tools
 brew "protobuf"         # Protocol buffers
