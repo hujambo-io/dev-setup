@@ -7,6 +7,37 @@ echo "Creating development environment directory structure..."
 mkdir -p ~/Developer/{01-ToSync/{01-10-Learn,01-20-Tools,01-50-Projects,01-70-VirtualEnvs},05-SyncSelected/{05-10-Learn,05-20-Tools,05-50-Projects,05-70-VirtualEnvs},09-NoSync/{09-10-Learn,09-20-Tools,09-50-Projects,09-70-VirtualEnvs}}
 echo "Development environment directories created."
 
+#!/bin/zsh
+
+# Base directories for projects
+BASE_DIRS=(
+  ~/Developer/01-ToSync/01-50-Projects
+  ~/Developer/05-SyncSelected/05-50-Projects
+  ~/Developer/09-NoSync/09-50-Projects
+)
+
+# Sample project name
+SAMPLE_PROJECT="01-ProjectTemplate"
+
+# Function to create the project structure
+create_structure() {
+  local base_dir=$1
+  local project_path="$base_dir/$SAMPLE_PROJECT"
+
+  echo "Creating project structure at: $project_path"
+
+  mkdir -p "$project_path"/{01-Docs/{01-Requirements,02-Draft,03-Design,04-Prototype,05-DevelopmentNotes,06-TestingPlans,07-ReferenceMaterials},03-Src,05-Tests/{01-UnitTests,02-IntegrationTests,03-EndToEndTests},07-Deliverables/{01-WeeklyReports,02-MonthlyReviews,03-QuarterlyReviews,04-InitialProposal,05-TechnicalSpecs,06-FinalReport,07-Presentations}}
+
+  echo "Project structure created at: $project_path"
+}
+
+# Loop through each base directory and create the structure
+for base_dir in "${BASE_DIRS[@]}"; do
+  create_structure "$base_dir"
+done
+
+echo "Sample project structure created under all specified directories."
+
 
 echo "Starting development environment setup..."
 
