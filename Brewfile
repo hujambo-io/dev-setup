@@ -14,7 +14,7 @@ brew "nvm"              # Node Version Manager
 
 # Development Tools
 brew "python"           # Python (latest 3.x version)
-brew install --cask "miniconda"
+brew install --cask miniconda
 brew install dart-sdk
 brew install --cask flutter
 brew "ffmpeg"           # Video processing
