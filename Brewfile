@@ -28,6 +28,7 @@ brew "protobuf"         # Protocol buffers
 cask "android-platform-tools"
 cask "android-sdk"
 cask "android-studio"
+brew "mise"
 
 # Browsers
 cask "google-chrome"
