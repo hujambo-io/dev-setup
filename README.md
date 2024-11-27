@@ -6,6 +6,6 @@ This repository contains scripts and configurations to set up a development envi
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/<your-username>/<repo-name>.git
+   git clone https://github.com/hujambo.io/dev-setup.git
    cd <repo-name>
 
