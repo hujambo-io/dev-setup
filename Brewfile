@@ -18,6 +18,8 @@ brew "python"           # Python (latest 3.x version)
 cask "miniconda"
 cask "flutter"
 brew "ffmpeg"           # Video processing
+cask "syncthing"
+
 
 # AI/ML Libraries and Tools
 brew "protobuf"         # Protocol buffers

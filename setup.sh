@@ -47,10 +47,17 @@ if ! command -v brew &>/dev/null; then
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   echo "Adding Homebrew to PATH for this script..."
   eval "$(/opt/homebrew/bin/brew shellenv)" # Add Homebrew to PATH for the current script session
+
+    echo >> /Users/ramsub/.zprofile
+    echo 'eval "$(/usr/local/bin/brew shellenv)"' >> /Users/ramsub/.zprofile
+    eval "$(/usr/local/bin/brew shellenv)"
+
 else
   echo "Homebrew already installed."
   eval "$(/opt/homebrew/bin/brew shellenv)" # Ensure PATH is updated for the current script session
 fi
+
+
 
 # Update Homebrew
 echo "Updating Homebrew..."
@@ -120,6 +127,8 @@ if ! command -v sdk &>/dev/null; then
 else
   echo "SDKMAN already installed."
 fi
+
+conda init zsh
 
 # Cleanup
 echo "Cleaning up..."
