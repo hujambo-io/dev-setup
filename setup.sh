@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Exit on errors
+# Exit on errors for critical steps but allow continued execution for non-critical ones
 set -e
 
 echo "Starting development environment setup..."
@@ -24,13 +24,20 @@ brew update
 REPO_URL="https://github.com/hujambo-io/dev-setup.git"
 TEMP_DIR=$(mktemp -d)
 echo "Cloning Brewfile repository..."
-git clone "$REPO_URL" "$TEMP_DIR"
+if git clone "$REPO_URL" "$TEMP_DIR"; then
+  echo "Repository cloned successfully."
+else
+  echo "Warning: Failed to clone repository. Check the URL or network connection."
+  exit 1
+fi
 
 # Install all tools and applications from the Brewfile
 BREWFILE_PATH="$TEMP_DIR/Brewfile"
 if [ -f "$BREWFILE_PATH" ]; then
   echo "Installing tools and applications from Brewfile..."
-  brew bundle --file="$BREWFILE_PATH"
+  if ! brew bundle --file="$BREWFILE_PATH"; then
+    echo "Warning: Some dependencies failed to install. Review the errors above."
+  fi
 else
   echo "Error: Brewfile not found in the repository."
   exit 1
@@ -43,33 +50,42 @@ rm -rf "$TEMP_DIR"
 echo "Configuring NVM..."
 export NVM_DIR="$HOME/.nvm"
 mkdir -p "$NVM_DIR"
-[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && . "/opt/homebrew/opt/nvm/nvm.sh"
+if [ -s "/opt/homebrew/opt/nvm/nvm.sh" ]; then
+  . "/opt/homebrew/opt/nvm/nvm.sh"
+else
+  echo "Warning: NVM script not found. Ensure NVM is installed properly."
+fi
 
 # Install Node.js (LTS)
 echo "Installing Node.js via NVM..."
-nvm install --lts
-nvm use --lts
-
+if ! nvm install --lts; then
+  echo "Warning: Node.js installation failed via NVM."
+else
+  nvm use --lts || echo "Warning: Unable to switch to Node.js LTS version."
+fi
 
 # Install SDKMAN
 if ! command -v sdk &>/dev/null; then
   echo "Installing SDKMAN..."
-  curl -s "https://get.sdkman.io" | bash
-  echo 'export SDKMAN_DIR="$HOME/.sdkman"' >> ~/.zshrc
-  echo '[[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"' >> ~/.zshrc
-  source ~/.zshrc
+  if curl -s "https://get.sdkman.io" | bash; then
+    echo 'export SDKMAN_DIR="$HOME/.sdkman"' >> ~/.zshrc
+    echo '[[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"' >> ~/.zshrc
+    source ~/.zshrc
+    echo "Installing Java via SDKMAN..."
+    if ! sdk install java; then
+      echo "Warning: Java installation via SDKMAN failed."
+    fi
+  else
+    echo "Warning: SDKMAN installation failed."
+  fi
 else
   echo "SDKMAN already installed."
 fi
 
-
-
-
-
-
 # Cleanup
 echo "Cleaning up..."
-brew cleanup
+if ! brew cleanup; then
+  echo "Warning: Homebrew cleanup failed."
+fi
 
-echo "Development environment setup complete!"
-
+echo "Development environment setup complete! Review warnings above for any issues."
