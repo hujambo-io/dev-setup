@@ -14,9 +14,9 @@ brew "nvm"              # Node Version Manager
 
 # Development Tools
 brew "python"           # Python (latest 3.x version)
-brew install --cask miniconda
-brew install dart-sdk
-brew install --cask flutter
+cask "miniconda"
+cask "dart-sdk"
+cask "flutter"
 brew "ffmpeg"           # Video processing
 brew "docker"           # Containerization
 
@@ -24,13 +24,13 @@ brew "docker"           # Containerization
 brew "protobuf"         # Protocol buffers
 
 # Mobile Development Tools
-brew install --cask android-platform-tools
-brew install --cask android-sdk
-brew install --cask android-studio
+cask "android-platform-tools"
+cask "android-sdk"
+cask "android-studio"
 
 # Browsers
-brew install --cask google-chrome
-brew install --cask firefox
+cask "google-chrome"
+cask "firefox"
 cask "microsoft-edge"          # Alternative browser for testing
 
 # GUI Applications
@@ -46,5 +46,5 @@ brew "httpie"                  # User-friendly HTTP client
 brew "selenium-server"         # Selenium for browser testing
 
 # Fonts (for better coding experience)
-brew install --cask font-fira-code
+cask "font-fira-code"
 
