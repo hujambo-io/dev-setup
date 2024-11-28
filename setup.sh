@@ -48,8 +48,8 @@ if ! command -v brew &>/dev/null; then
   echo "Adding Homebrew to PATH for this script..."
   eval "$(/opt/homebrew/bin/brew shellenv)" # Add Homebrew to PATH for the current script session
 
-    echo >> /Users/ramsub/.zprofile
-    echo 'eval "$(/usr/local/bin/brew shellenv)"' >> /Users/ramsub/.zprofile
+    echo >> ~/.zprofile
+    echo 'eval "$(/usr/local/bin/brew shellenv)"' >> ~/.zprofile
     eval "$(/usr/local/bin/brew shellenv)"
 
 else
