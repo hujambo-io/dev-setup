@@ -11,6 +11,7 @@ brew "htop"             # System monitor
 brew "tree"             # Directory viewer
 brew "jq"               # JSON processor
 brew "nvm"              # Node Version Manager
+brew "telnet"
 
 # Development Tools
 cask "docker"
@@ -28,7 +29,7 @@ brew "protobuf"         # Protocol buffers
 cask "android-platform-tools"
 cask "android-sdk"
 cask "android-studio"
-brew "mise"
+cask "mongodb-compass"
 
 # Browsers
 cask "google-chrome"
