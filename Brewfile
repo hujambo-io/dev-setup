@@ -26,6 +26,8 @@ cask "syncthing"
 brew "protobuf"         # Protocol buffers
 
 # Mobile Development Tools
+brew "ruby"
+brew "cocoapods"
 cask "android-platform-tools"
 cask "android-sdk"
 cask "android-studio"

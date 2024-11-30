@@ -110,6 +110,8 @@ else
   nvm use --lts || echo "Warning: Unable to switch to Node.js LTS version."
 fi
 
+export sdkman_auto_answer=false
+
 # Install SDKMAN
 if ! command -v sdk &>/dev/null; then
   echo "Installing SDKMAN..."
@@ -128,6 +130,11 @@ else
   echo "SDKMAN already installed."
 fi
 
+export sdkman_auto_answer=false
+sdk install java 8.0.432-tem
+sdk use java 8.0.432-tem
+sdk default java 8.0.432-tem
+
 conda init zsh
 # Install Oh My Zsh
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
@@ -136,6 +143,9 @@ if [ ! -d "$HOME/.oh-my-zsh" ]; then
 else
   echo "Oh My Zsh is already installed. Skipping installation."
 fi
+
+gem install cocoapods
+
 # Cleanup
 echo "Cleaning up..."
 if ! brew cleanup; then
