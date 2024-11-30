@@ -32,6 +32,8 @@ cask "android-platform-tools"
 cask "android-sdk"
 cask "android-studio"
 cask "mongodb-compass"
+brew "cocoapods"
+brew "fastlane"
 
 # Browsers
 cask "google-chrome"

@@ -144,7 +144,7 @@ else
   echo "Oh My Zsh is already installed. Skipping installation."
 fi
 
-gem install cocoapods
+# gem install cocoapods
 
 # Cleanup
 echo "Cleaning up..."
