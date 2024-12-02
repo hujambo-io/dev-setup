@@ -1,4 +1,3 @@
-Here's an updated README.md file reflecting the new Ansible-based setup process while keeping the old method under a "Deprecated" section:
 
 # Development Environment Setup
 
