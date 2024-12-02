@@ -54,19 +54,3 @@ This project is licensed under the MIT License.
 
 ---
 
-### **Changes Made**
-1. **Highlighted the New Ansible Workflow**:
-   - Added clear instructions for using the Ansible-based bootstrap scripts.
-   - Made it the default method.
-
-2. **Moved Old Methods to a Deprecated Section**:
-   - Retained the old setup methods (`setup.sh`, `curl`, `wget`) under a "Deprecated" heading.
-   - Marked them for removal in future updates.
-
-3. **Clarified Platform Support**:
-   - Emphasized cross-platform compatibility with Ansible.
-
-4. **Future-Proofing**:
-   - Encouraged users to adopt the new method while keeping the old one temporarily.
-
-Let me know if you’d like further tweaks or additions! 🚀
