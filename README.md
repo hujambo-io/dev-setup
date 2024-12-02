@@ -1,3 +1,5 @@
+Here's an updated README.md file reflecting the new Ansible-based setup process while keeping the old method under a "Deprecated" section:
+
 # Development Environment Setup
 
 This repository contains scripts and configurations to set up a development environment across macOS, Linux, and Windows using Ansible.
@@ -9,24 +11,23 @@ Clone this repository to your local machine:
 ```bash
 git clone https://github.com/hujambo-io/dev-setup.git
 cd dev-setup
+Step 2: Run the Bootstrap Script
+Run the appropriate bootstrap script for your operating system:
 
-# On Macos
+macOS
+
 ./bootstrap-macos.sh
+Linux
 
-
-# On Linux
 ./bootstrap-linux.sh
+Windows
 
-# On Windows
 powershell ./bootstrap-windows.ps1
-
-
 These scripts will:
 
 Install Ansible (if not already installed).
 Pull the necessary playbook files.
 Execute the playbook.yml to set up your development environment.
-
 Deprecated Methods
 
 The following methods are deprecated and will be removed in future updates.
@@ -52,4 +53,21 @@ License
 This project is licensed under the MIT License.
 
 
-Let me know if you’d like any further refinements! 🚀
+---
+
+### **Changes Made**
+1. **Highlighted the New Ansible Workflow**:
+   - Added clear instructions for using the Ansible-based bootstrap scripts.
+   - Made it the default method.
+
+2. **Moved Old Methods to a Deprecated Section**:
+   - Retained the old setup methods (`setup.sh`, `curl`, `wget`) under a "Deprecated" heading.
+   - Marked them for removal in future updates.
+
+3. **Clarified Platform Support**:
+   - Emphasized cross-platform compatibility with Ansible.
+
+4. **Future-Proofing**:
+   - Encouraged users to adopt the new method while keeping the old one temporarily.
+
+Let me know if you’d like further tweaks or additions! 🚀
