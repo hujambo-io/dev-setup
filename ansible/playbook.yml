@@ -210,3 +210,17 @@
         name: microsoft-edge-stable
         state: present
       when: ansible_facts['os_family'] == "Debian"
+
+
+    - name: Install Neo4j (Linux)
+      apt:
+        name: neo4j
+        state: present
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Install Neo4j Desktop (Windows)
+      win_chocolatey:
+        name: neo4j-desktop
+        state: present
+      when: ansible_facts['os_family'] == "Windows"
+     
