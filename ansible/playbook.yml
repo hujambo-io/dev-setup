@@ -1,0 +1,212 @@
+---
+- name: Setup Development Environment
+  hosts: localhost
+  connection: local
+  vars:
+    # Centralized List of Tools
+    common_tools:
+      - git
+      - wget
+      - vim
+      - htop
+      - tree
+      - jq
+      - nvm
+      - python
+      - ffmpeg
+      - ruby
+      - android-sdk
+      - android-studio
+      - mongodb-compass
+      - slack
+      - zoom
+      - postman
+      - k6
+      - httpie
+      - firefox
+      - curl
+
+    macos_tools:
+      - zsh
+      - tmux
+      - telnet
+      - docker
+      - miniconda
+      - flutter
+      - bruno
+      - cocoapods
+      - android-platform-tools
+      - fastlane
+      - google-chrome
+      - microsoft-edge
+      - visual-studio-code
+      - iterm2
+      - selenium-server
+      - font-fira-code
+      - homebrew/cask/syncthing
+      - cypher-shell
+
+
+    linux_tools:
+      - zsh
+      - tmux
+      - telnet
+      - docker.io
+      - protobuf-compiler
+      - android-tools-adb
+      - code  # Visual Studio Code
+      - fonts-firacode
+      - build-essential
+      - apt-transport-https
+      - ca-certificates
+      - gnupg
+      - lsb-release
+      - syncthing
+
+
+    windows_tools:
+      - nvm
+      - miniconda3
+      - docker-desktop
+      - protobuf
+      - adb
+      - googlechrome
+      - microsoft-edge
+      - vscode
+      - firacode
+      - oh-my-posh  # Alternative to zsh
+      - syncthing
+
+  tasks:
+    # macOS Tasks
+    - name: Install Homebrew (macOS)
+      shell: |
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+      args:
+        creates: /opt/homebrew/bin/brew
+      when: ansible_facts['os_family'] == "Darwin"
+
+    - name: Install Brew packages (macOS)
+      homebrew:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ common_tools + macos_tools }}"
+      when: ansible_facts['os_family'] == "Darwin"
+
+    # Linux Tasks
+    - name: Update APT cache (Linux)
+      apt:
+        update_cache: yes
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Install essential packages (Linux)
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ ['git', 'wget', 'vim', 'curl'] }}"
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Install APT packages (Linux)
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ common_tools + linux_tools }}"
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Install Docker (Linux)
+      shell: |
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+        sudo add-apt-repository \
+          "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+          $(lsb_release -cs) stable"
+        sudo apt update
+        sudo apt install -y docker-ce docker-ce-cli containerd.io
+      args:
+        creates: /usr/bin/docker
+      when: ansible_facts['os_family'] == "Debian"
+
+    # Windows Tasks
+    - name: Install Chocolatey (Windows)
+      win_shell: |
+        Set-ExecutionPolicy Bypass -Scope Process -Force
+        if (-not (Get-Command choco.exe -ErrorAction SilentlyContinue)) {
+          iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+        }
+      args:
+        creates: C:\ProgramData\chocolatey
+      when: ansible_facts['os_family'] == "Windows"
+
+    - name: Install Chocolatey packages (Windows)
+      win_chocolatey:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ common_tools + windows_tools }}"
+      when: ansible_facts['os_family'] == "Windows"
+
+    # Install Oh My Zsh (macOS and Linux)
+    - name: Install Oh My Zsh (macOS and Linux)
+      shell: |
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+      args:
+        creates: ~/.oh-my-zsh
+      when: ansible_facts['os_family'] in ["Darwin", "Debian"]
+
+    # Install Oh My Posh (Windows)
+    - name: Install Oh My Posh (Windows)
+      win_chocolatey:
+        name: "oh-my-posh"
+        state: present
+      when: ansible_facts['os_family'] == "Windows"
+
+
+
+
+#
+#
+#
+
+    # Install Miniconda (Linux)
+    - name: Install Miniconda (Linux)
+      shell: |
+        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh
+        bash ~/miniconda.sh -b -p $HOME/miniconda
+        echo 'export PATH="$HOME/miniconda/bin:$PATH"' >> ~/.bashrc
+        source ~/.bashrc
+      args:
+        creates: ~/miniconda
+      when: ansible_facts['os_family'] == "Debian"
+
+    # Install Google Chrome (Linux)
+    - name: Add Google Chrome repository (Linux)
+      shell: |
+        wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+        sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+        sudo apt update
+      args:
+        creates: /etc/apt/sources.list.d/google-chrome.list
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Install Google Chrome (Linux)
+      apt:
+        name: google-chrome-stable
+        state: present
+      when: ansible_facts['os_family'] == "Debian"
+
+    # Install Microsoft Edge (Linux)
+    - name: Add Microsoft Edge repository (Linux)
+      shell: |
+        curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+        sudo install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/
+        sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main" >> /etc/apt/sources.list.d/microsoft-edge.list'
+        sudo apt update
+      args:
+        creates: /etc/apt/sources.list.d/microsoft-edge.list
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Install Microsoft Edge (Linux)
+      apt:
+        name: microsoft-edge-stable
+        state: present
+      when: ansible_facts['os_family'] == "Debian"
