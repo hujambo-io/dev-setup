@@ -1,226 +1,426 @@
 ---
 - name: Setup Development Environment
   hosts: localhost
-  connection: local
   vars:
-    # Centralized List of Tools
-    common_tools:
-      - git
-      - wget
-      - vim
-      - htop
-      - tree
-      - jq
-      - nvm
-      - python
-      - ffmpeg
-      - ruby
-      - android-sdk
-      - android-studio
-      - mongodb-compass
-      - slack
-      - zoom
-      - postman
-      - k6
-      - httpie
-      - firefox
-      - curl
+    tools:
+      - name: git
+        roles: ["default"]
+        platforms:
+          type: universal
 
-    macos_tools:
-      - zsh
-      - tmux
-      - telnet
-      - docker
-      - miniconda
-      - flutter
-      - bruno
-      - cocoapods
-      - android-platform-tools
-      - fastlane
-      - google-chrome
-      - microsoft-edge
-      - visual-studio-code
-      - iterm2
-      - selenium-server
-      - font-fira-code
-      - homebrew/cask/syncthing
-      - cypher-shell
+      - name: wget
+        roles: ["default"]
+        platforms:
+          type: universal
 
+      - name: vim
+        roles: ["default"]
+        platforms:
+          type: universal
 
-    linux_tools:
-      - zsh
-      - tmux
-      - telnet
-      - docker.io
-      - protobuf-compiler
-      - android-tools-adb
-      - code  # Visual Studio Code
-      - fonts-firacode
-      - build-essential
-      - apt-transport-https
-      - ca-certificates
-      - gnupg
-      - lsb-release
-      - syncthing
+      - name: htop
+        roles: ["default"]
+        platforms:
+          type: universal
 
+      - name: tree
+        roles: ["default"]
+        platforms:
+          type: universal
 
-    windows_tools:
-      - nvm
-      - miniconda3
-      - docker-desktop
-      - protobuf
-      - adb
-      - googlechrome
-      - microsoft-edge
-      - vscode
-      - firacode
-      - oh-my-posh  # Alternative to zsh
-      - syncthing
+      - name: jq
+        roles: ["default"]
+        platforms:
+          type: universal
+
+      - name: nvm
+        roles: ["frontend"]
+        platforms:
+          type: universal
+
+      - name: python
+        roles: ["default"]
+        platforms:
+          type: universal
+
+      - name: ffmpeg
+        roles: ["full-stack"]
+        platforms:
+          type: universal
+
+      - name: ruby
+        roles: ["default"]
+        platforms:
+          type: universal
+
+      - name: r
+        roles: ["full-stack"]
+        platforms:
+          type: universal
+
+      - name: rstudio
+        roles: ["full-stack"]
+        platforms:
+          type: universal
+
+      - name: android-sdk
+        roles: ["mobile"]
+        platforms:
+          type: universal
+
+      - name: android-studio
+        roles: ["mobile"]
+        platforms:
+          type: universal
+
+      - name: mongodb-compass
+        roles: ["full-stack"]
+        platforms:
+          type: universal
+
+      - name: slack
+        roles: ["default"]
+        platforms:
+          type: universal
+
+      - name: zoom
+        roles: ["default"]
+        platforms:
+          type: universal
+
+      - name: postman
+        roles: ["default"]
+        platforms:
+          type: universal
+
+      - name: k6
+        roles: ["QA"]
+        platforms:
+          type: universal
+
+      - name: httpie
+        roles: ["default"]
+        platforms:
+          type: universal
+
+      - name: bruno
+        roles: ["default"]
+        platforms:
+          type: universal
+
+      - name: selenium-server
+        roles: ["QA"]
+        platforms:
+          type: universal
+
+      - name: firefox
+        roles: ["default"]
+        platforms:
+          type: platform-specific
+          Darwin:
+            install_type: standard
+          Linux:
+            install_type: standard:firefox
+          Windows:
+            install_type: standard:firefox
+
+      - name: curl
+        roles: ["default"]
+        platforms:
+          type: universal
+
+      - name: zsh
+        roles: ["default"]
+        platforms:
+          type: universal
+
+      - name: tmux
+        roles: ["default"]
+        platforms:
+          type: universal
+
+      - name: telnet
+        roles: ["default"]
+        platforms:
+          type: universal
+
+      - name: docker
+        roles: ["default"]
+        platforms:
+          type: universal
+
+      - name: miniconda
+        roles: ["backend"]
+        platforms:
+          type: universal
+
+      - name: flutter
+        roles: ["mobile"]
+        platforms:
+          type: universal
+
+      - name: cocoapods
+        roles: ["mobile"]
+        platforms:
+          type: platform-specific
+          Darwin:
+            install_type: standard
+            # shell:brew install brew-gem && && brew link --force brew-gem && gem install cocoapods
+
+      - name: android-platform-tools
+        roles: ["mobile"]
+        platforms:
+          type: universal
+
+      - name: fastlane
+        roles: ["mobile"]
+        platforms:
+          type: universal
+
+      - name: google-chrome
+        roles: ["default"]
+        platforms:
+          type: platform-specific
+          Darwin:
+            install_type: standard
+          Linux:
+            install_type: standard:google-chrome-stable
+          Windows:
+            install_type: standard:googlechrome
+
+      - name: microsoft-edge
+        roles: ["default"]
+        platforms:
+          type: platform-specific
+          Darwin:
+            install_type: standard
+          Linux:
+            install_type: standard:microsoft-edge-stable
+          Windows:
+            install_type: standard:microsoft-edge
+
+      - name: visual-studio-code
+        roles: ["default"]
+        platforms:
+          type: universal
+
+      - name: intellij-idea-ce
+        roles: ["default"]
+        platforms:
+          type: universal
+
+      - name: netbeans
+        roles: ["full-stack"]
+        platforms:
+          type: platform-specific
+          Darwin:
+            install_type: standard
+          Linux:
+            install_type: standard:netbeans-linux-deb-package
+          Windows:
+            install_type: standard:netbeans
+
+      - name: eclipse-java
+        roles: ["full-stack"]
+        platforms:
+          type: universal
+
+      - name: papyrus
+        roles: ["full-stack"]
+        platforms:
+          type: platform-specific
+          Darwin:
+            install_type: standard
+          Linux:
+            install_type: standard:papyrus-linux-deb-package
+          Windows:
+            install_type: standard:papyrus
+
+      - name: font-fira-code
+        roles: ["default"]
+        platforms:
+          type: universal
+
+      - name: syncthing
+        roles: ["default"]
+        platforms:
+          type: platform-specific
+          Darwin:
+            install_type: syncthing
+          Linux:
+            install_type: standard:syncthing
+          Windows:
+            install_type: standard:syncthing
+
+      - name: cypher-shell
+        roles: ["full-stack"]
+        platforms:
+          type: universal
+
+      - name: protobuf-compiler
+        roles: ["default"]
+        platforms:
+          type: platform-specific
+          # Darwin:
+            # install_type: standard:protobuf
+          Linux:
+            install_type: standard:protobuf-compiler
+          Windows:
+            install_type: shell:choco install protoc -y
+
+      - name: build-essential
+        roles: ["default"]
+        platforms:
+          type: platform-specific
+          # Darwin:
+            # install_type: shell:xcode-select --install
+          Linux:
+            install_type: standard:build-essential
+          Windows:
+            install_type: standard:build-tools
+
+      - name: apt-transport-https
+        roles: ["default"]
+        platforms:
+          type: Linux
+
+      - name: ca-certificates
+        roles: ["default"]
+        platforms:
+          type: Linux
+
+      - name: gnupg
+        roles: ["default"]
+        platforms:
+          type: Linux
+
+      - name: lsb-release
+        roles: ["default"]
+        platforms:
+          type: Linux
+
+      - name: oh-my-posh
+        roles: ["default"]
+        platforms:
+          type: universal
+
+      - name: oh-my-zsh
+        roles: ["default"]
+        platforms:
+          type: platform-specific
+          # Darwin:
+            # install_type: shell:sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"  
+          Linux:    
+            install_type: shell:sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"  
+            
+
+      - name: neo4j
+        roles: ["full-stack"]
+        platforms:
+          type: universal
+
+#      - name: neo4j-desktop
+#        roles: ["full-stack"]
+#        platforms:
+#          type: platform-specific
+#          Darwin:
+#            install_type: special:neo4j_desktop_install
+#          Linux:
+#            install_type: special:neo4j_desktop_install
+#          Windows:
+#            install_type: special:neo4j_desktop_install
+
+      - name: zip
+        roles: ["default"]
+        platforms:
+          type: universal
+
+      - name: sdkman
+        roles: ["default"]
+        platforms:
+          type: platform-specific
+          Darwin:
+            install_type: special:sdkman_install
+
 
   tasks:
-    # macOS Tasks
-    - name: Install Homebrew (macOS)
-      shell: |
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
-        eval "$(/opt/homebrew/bin/brew shellenv)"
-      args:
-        creates: /opt/homebrew/bin/brew
-      when: ansible_facts['os_family'] == "Darwin"
 
-    - name: Install Brew packages (macOS)
-      homebrew:
-        name: "{{ item }}"
-        state: present
-      loop: "{{ common_tools + macos_tools }}"
-      when: ansible_facts['os_family'] == "Darwin"
+    - name: Install ansible.windows collection
+      ansible.builtin.shell: |
+        ansible-galaxy collection install ansible.windows
+      tags:
+        - setup
 
-    # Linux Tasks
-    - name: Update APT cache (Linux)
-      apt:
-        update_cache: yes
-      when: ansible_facts['os_family'] == "Debian"
-
-    - name: Install essential packages (Linux)
-      apt:
-        name: "{{ item }}"
-        state: present
-      loop: "{{ ['git', 'wget', 'vim', 'curl'] }}"
-      when: ansible_facts['os_family'] == "Debian"
-
-    - name: Install APT packages (Linux)
-      apt:
-        name: "{{ item }}"
-        state: present
-      loop: "{{ common_tools + linux_tools }}"
-      when: ansible_facts['os_family'] == "Debian"
-
-    - name: Install Docker (Linux)
-      shell: |
-        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-        sudo add-apt-repository \
-          "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-          $(lsb_release -cs) stable"
-        sudo apt update
-        sudo apt install -y docker-ce docker-ce-cli containerd.io
-      args:
-        creates: /usr/bin/docker
-      when: ansible_facts['os_family'] == "Debian"
-
-    # Windows Tasks
-    - name: Install Chocolatey (Windows)
-      win_shell: |
-        Set-ExecutionPolicy Bypass -Scope Process -Force
-        if (-not (Get-Command choco.exe -ErrorAction SilentlyContinue)) {
-          iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-        }
-      args:
-        creates: C:\ProgramData\chocolatey
+    - name: Install Chocolatey on Windows
+      ansible.builtin.raw: |
+        Set-ExecutionPolicy Bypass -Scope Process -Force;
+        [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12;
+        iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
       when: ansible_facts['os_family'] == "Windows"
+      tags:
+        - setup
 
-    - name: Install Chocolatey packages (Windows)
-      win_chocolatey:
-        name: "{{ item }}"
+    - name: Install universal tools
+      ansible.builtin.package:
+        name: "{{ item.name }}"
         state: present
-      loop: "{{ common_tools + windows_tools }}"
-      when: ansible_facts['os_family'] == "Windows"
+      loop: "{{ tools | selectattr('platforms.type', 'equalto', 'universal') | list }}"
+      tags:
+        - always
 
-    # Install Oh My Zsh (macOS and Linux)
-    - name: Install Oh My Zsh (macOS and Linux)
-      shell: |
-        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-      args:
-        creates: ~/.oh-my-zsh
-      when: ansible_facts['os_family'] in ["Darwin", "Debian"]
+    - name: Install platform-specific tools
+      ansible.builtin.shell:
+        cmd: >
+          {% if item.platforms[ansible_facts['os_family']]['install_type'].startswith('standard:') %}
+            {{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}
+          {% elif item.platforms[ansible_facts['os_family']]['install_type'].startswith('shell:') %}
+            {{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}
+          {% else %}
+            echo "Unsupported install_type for {{ item.name }}"
+          {% endif %}
+      loop: "{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | list }}"
+      when: item.platforms[ansible_facts['os_family']] is defined
+      tags:
+        - always
 
-    # Install Oh My Posh (Windows)
-    - name: Install Oh My Posh (Windows)
-      win_chocolatey:
-        name: "oh-my-posh"
-        state: present
-      when: ansible_facts['os_family'] == "Windows"
+    - name: Install SDKMAN
+      ansible.builtin.shell:
+        cmd: |
+          curl -s "https://get.sdkman.io" | bash && \
+          echo 'export SDKMAN_DIR="$HOME/.sdkman"' >> ~/.zshrc && \
+          echo '[[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"' >> ~/.zshrc && \
+          source ~/.zshrc
+      when: item.platforms.install_type is defined and item.platforms.install_type == "special:sdkman_install"
+      tags:
+        - always
 
+#    - name: Install Neo4j Desktop on Darwin
+#      ansible.builtin.shell: |
+#        curl -O https://neo4j.com/artifact.php?name=neo4j-desktop-1.5.8.dmg &&
+#        hdiutil attach neo4j-desktop-1.5.8.dmg &&
+#        cp -R /Volumes/Neo4j\ Desktop/Neo4j\ Desktop.app /Applications &&
+#        hdiutil detach /Volumes/Neo4j\ Desktop
+#      when: ansible_facts['os_family'] == "Darwin"
+#      args:
+#        creates: /Applications/Neo4j\ Desktop.app
+#      tags:
+#        - full-stack
 
+#    - name: Install Neo4j Desktop on Linux
+#      ansible.builtin.shell: |
+#        wget https://neo4j.com/artifact.php?name=neo4j-desktop-1.5.8-linux.deb &&
+#        sudo dpkg -i neo4j-desktop-1.5.8-linux.deb
+#      when: ansible_facts['os_family'] == "Linux"
+#      args:
+#        creates: /usr/bin/neo4j-desktop
+#      tags:
+#        - full-stack
 
+#    - name: Install Neo4j Desktop on Windows
+#      ansible.windows.win_chocolatey:
+#        name: neo4j-desktop
+#        state: present
+#      when: ansible_facts['os_family'] == "Windows"
+#      tags:
+#        - full-stack
 
-#
-#
-#
-
-    # Install Miniconda (Linux)
-    - name: Install Miniconda (Linux)
-      shell: |
-        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh
-        bash ~/miniconda.sh -b -p $HOME/miniconda
-        echo 'export PATH="$HOME/miniconda/bin:$PATH"' >> ~/.bashrc
-        source ~/.bashrc
-      args:
-        creates: ~/miniconda
-      when: ansible_facts['os_family'] == "Debian"
-
-    # Install Google Chrome (Linux)
-    - name: Add Google Chrome repository (Linux)
-      shell: |
-        wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-        sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
-        sudo apt update
-      args:
-        creates: /etc/apt/sources.list.d/google-chrome.list
-      when: ansible_facts['os_family'] == "Debian"
-
-    - name: Install Google Chrome (Linux)
-      apt:
-        name: google-chrome-stable
-        state: present
-      when: ansible_facts['os_family'] == "Debian"
-
-    # Install Microsoft Edge (Linux)
-    - name: Add Microsoft Edge repository (Linux)
-      shell: |
-        curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
-        sudo install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/
-        sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main" >> /etc/apt/sources.list.d/microsoft-edge.list'
-        sudo apt update
-      args:
-        creates: /etc/apt/sources.list.d/microsoft-edge.list
-      when: ansible_facts['os_family'] == "Debian"
-
-    - name: Install Microsoft Edge (Linux)
-      apt:
-        name: microsoft-edge-stable
-        state: present
-      when: ansible_facts['os_family'] == "Debian"
-
-
-    - name: Install Neo4j (Linux)
-      apt:
-        name: neo4j
-        state: present
-      when: ansible_facts['os_family'] == "Debian"
-
-    - name: Install Neo4j Desktop (Windows)
-      win_chocolatey:
-        name: neo4j-desktop
-        state: present
-      when: ansible_facts['os_family'] == "Windows"
-     
