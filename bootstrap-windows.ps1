@@ -1,6 +1,20 @@
 # Exit on error
 $ErrorActionPreference = "Stop"
 
+
+# Handle direct installation
+$SCRIPT_SOURCE = "https://github.com/hujambo-io/dev-setup.git"
+$TEMP_DIR = ""
+
+if ($MyInvocation.MyCommand.Source -eq "") {
+    Write-Output "Direct installation detected. Cloning repository..."
+    $TEMP_DIR = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid().ToString())
+    New-Item -ItemType Directory -Path $TEMP_DIR | Out-Null
+    git clone $SCRIPT_SOURCE $TEMP_DIR
+    Set-Location $TEMP_DIR
+}
+
+
 # Script variables
 $Playbook = "ansible/playbook.yml"
 $Inventory = "ansible/inventory.yml"
@@ -165,6 +179,13 @@ try {
 } catch {
     Write-Output "Error: Ansible playbook execution failed"
     exit 1
+}
+
+# Add cleanup at the end
+if ($TEMP_DIR -ne "") {
+    Write-Output "Cleaning up temporary files..."
+    Set-Location $env:OLDPWD
+    Remove-Item -Recurse -Force $TEMP_DIR
 }
 
 Write-Output "Setup completed successfully!"
