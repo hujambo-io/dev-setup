@@ -6,7 +6,7 @@ set -e
 
 # Handle direct installation
 SCRIPT_SOURCE="https://github.com/hujambo-io/dev-setup.git"
-TEMP_DIR="/tmp"
+TEMP_DIR=""
 ORIGINAL_DIR=""
 
 
