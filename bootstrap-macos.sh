@@ -6,7 +6,7 @@ set -e
 
 # Handle direct installation
 SCRIPT_SOURCE="https://github.com/hujambo-io/dev-setup.git"
-TEMP_DIR="/tmp/dev-setup"
+TEMP_DIR="/tmp"
 ORIGINAL_DIR=""
 
 
@@ -14,7 +14,7 @@ if [[ ! -f "ansible/playbook.yml" ]]; then
     echo "Direct installation detected. Cloning repository..."
     TEMP_DIR=$(mktemp -d)
     git clone "$SCRIPT_SOURCE" "$TEMP_DIR"
-    cd "$TEMP_DIR/dev-setup/dev-setup"
+    cd "$TEMP_DIR"
 fi
 
 
