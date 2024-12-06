@@ -13,7 +13,7 @@ if [[ "$0" == "/dev/stdin" ]]; then
     echo "Direct installation detected. Cloning repository..."
     TEMP_DIR=$(mktemp -d)
     git clone "$SCRIPT_SOURCE" "$TEMP_DIR"
-    cd "$TEMP_DIR"
+    cd "$TEMP_DIR/dev-setup/dev-setup"
 fi
 
 

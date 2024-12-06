@@ -13,7 +13,7 @@ if ($MyInvocation.MyCommand.Source -eq "") {
     $TEMP_DIR = "$env:TEMP\dev-setup-" + [System.Guid]::NewGuid().ToString()
     New-Item -ItemType Directory -Path $TEMP_DIR | Out-Null
     git clone $SCRIPT_SOURCE $TEMP_DIR
-    Set-Location $TEMP_DIR
+    Set-Location $TEMP_DIR/dev-setup
 }
 
 
