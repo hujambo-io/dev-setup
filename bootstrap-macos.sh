@@ -10,7 +10,7 @@ TEMP_DIR="/tmp/dev-setup"
 ORIGINAL_DIR=""
 
 
-if [[ "$0" == "/dev/stdin" ]]; then
+if [[ ! -f "ansible/playbook.yml" ]]; then
     echo "Direct installation detected. Cloning repository..."
     TEMP_DIR=$(mktemp -d)
     git clone "$SCRIPT_SOURCE" "$TEMP_DIR"
