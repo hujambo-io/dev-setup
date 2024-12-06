@@ -1,7 +1,6 @@
 ---
 - name: Setup Development Environment
   hosts: all
-  become: true
   vars:
     tools:
       - name: git
