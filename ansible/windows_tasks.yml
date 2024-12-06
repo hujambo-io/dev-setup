@@ -1,0 +1,88 @@
+---
+
+# Install Chocolatey
+- name: Install Chocolatey on Windows
+  ansible.builtin.raw: |
+    Set-ExecutionPolicy Bypass -Scope Process -Force;
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12;
+    iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+  tags:
+    - setup
+
+# Install universal tools
+- name: Install universal tools on Windows
+  community.windows.win_chocolatey:
+    name: "{{ item.name }}"
+    state: present
+  loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | list }}{% endif %}"
+  tags:
+    - install
+
+# Install platform-specific tools
+- name: Install platform-specific tools with chocolatey
+  community.windows.win_chocolatey:
+    name: "{{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}"
+    state: present
+  loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | list }}{% endif %}"
+  when: 
+    - item.platforms[ansible_facts['os_family']] is defined
+    - item.platforms[ansible_facts['os_family']]['install_type'].startswith('standard:')
+  tags:
+    - install
+
+# Uninstall universal tools
+- name: Uninstall universal tools on Windows
+  community.windows.win_chocolatey:
+    name: "{{ item.name }}"
+    state: absent
+
+  loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | list }}{% endif %}"
+  ignore_errors: true
+  tags:
+    - uninstall
+
+# Uninstall platform-specific tools
+- name: Uninstall platform-specific tools with chocolatey
+  community.windows.win_chocolatey:
+    name: "{{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}"
+    state: absent
+  loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | list }}{% endif %}"
+  when: 
+    - item.platforms[ansible_facts['os_family']] is defined
+    - item.platforms[ansible_facts['os_family']]['install_type'].startswith('standard:')
+  ignore_errors: true
+  tags:
+    - uninstall
+
+# Role-based uninstall tasks
+- name: Uninstall role-based universal tools on Windows
+  community.windows.win_chocolatey:
+    name: "{{ item.name }}"
+    state: absent
+  loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | list }}{% endif %}"
+  ignore_errors: true
+  tags:
+    - uninstall
+
+- name: Uninstall role-based platform-specific tools with chocolatey
+  community.windows.win_chocolatey:
+    name: "{{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}"
+    state: absent
+  loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | list }}{% endif %}"
+  when: 
+    - item.platforms[ansible_facts['os_family']] is defined
+    - item.platforms[ansible_facts['os_family']]['install_type'].startswith('standard:')
+  ignore_errors: true
+  tags:
+    - uninstall
+
+
+#    - name: Install universal tools on Windows
+#      community.windows.win_chocolatey:
+#        name: "{{ item.name }}"
+#        state: present
+#      loop: "{{ tools | selectattr('platforms.type', 'equalto', 'universal') | list }}"
+#      when: 
+#        - ansible_facts['os_family'] == 'Windows'
+#        - ansible_facts['distribution'] != 'MacOSX'  # Extra check to prevent false positives
+#        - community.windows.win_chocolatey is defined

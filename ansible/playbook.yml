@@ -1,117 +1,140 @@
 ---
 - name: Setup Development Environment
-  hosts: localhost
+  hosts: all
+  become: true
   vars:
     tools:
       - name: git
         roles: ["default"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: wget
         roles: ["default"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: vim
         roles: ["default"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: htop
         roles: ["default"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: tree
         roles: ["default"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: jq
         roles: ["default"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: nvm
         roles: ["frontend"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: python
         roles: ["default"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: ffmpeg
         roles: ["full-stack"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: ruby
         roles: ["default"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: r
         roles: ["full-stack"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: rstudio
         roles: ["full-stack"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: android-sdk
         roles: ["mobile"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: android-studio
         roles: ["mobile"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: mongodb-compass
         roles: ["full-stack"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: slack
         roles: ["default"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: zoom
         roles: ["default"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: postman
         roles: ["default"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: k6
         roles: ["QA"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: httpie
         roles: ["default"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: bruno
         roles: ["default"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: selenium-server
         roles: ["QA"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: firefox
         roles: ["default"]
@@ -128,36 +151,48 @@
         roles: ["default"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: zsh
         roles: ["default"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: tmux
         roles: ["default"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: telnet
         roles: ["default"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: docker
         roles: ["default"]
         platforms:
-          type: universal
+          type: platform-specific
+          Darwin:
+            install_type: shell:brew install --cask docker
+          Linux:  
+            install_type: shell:sudo apt-get install docker-ce docker-ce-cli containerd.io -y 
+          Windows:  
+            install_type: shell:choco install docker-desktop -y
 
       - name: miniconda
         roles: ["backend"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: flutter
         roles: ["mobile"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: cocoapods
         roles: ["mobile"]
@@ -171,11 +206,13 @@
         roles: ["mobile"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: fastlane
         roles: ["mobile"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: google-chrome
         roles: ["default"]
@@ -203,11 +240,13 @@
         roles: ["default"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: intellij-idea-ce
         roles: ["default"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: netbeans
         roles: ["full-stack"]
@@ -224,13 +263,14 @@
         roles: ["full-stack"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: papyrus
         roles: ["full-stack"]
         platforms:
           type: platform-specific
           Darwin:
-            install_type: standard
+            install_type: standard:papyrus
           Linux:
             install_type: standard:papyrus-linux-deb-package
           Windows:
@@ -240,6 +280,7 @@
         roles: ["default"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: syncthing
         roles: ["default"]
@@ -256,13 +297,14 @@
         roles: ["full-stack"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: protobuf-compiler
         roles: ["default"]
         platforms:
           type: platform-specific
-          # Darwin:
-            # install_type: standard:protobuf
+          Darwin:
+            install_type: shell:brew install protobuf
           Linux:
             install_type: standard:protobuf-compiler
           Windows:
@@ -272,8 +314,8 @@
         roles: ["default"]
         platforms:
           type: platform-specific
-          # Darwin:
-            # install_type: shell:xcode-select --install
+          Darwin:
+            install_type: special:xcode_install
           Linux:
             install_type: standard:build-essential
           Windows:
@@ -282,42 +324,51 @@
       - name: apt-transport-https
         roles: ["default"]
         platforms:
-          type: Linux
+          type: platform-specific
+          Linux:
+            install_type: standard
 
       - name: ca-certificates
         roles: ["default"]
         platforms:
-          type: Linux
+          type: platform-specific
+          Linux:
+            install_type: standard  
 
       - name: gnupg
         roles: ["default"]
         platforms:
-          type: Linux
+          type: platform-specific
+          Linux:
+            install_type: standard
 
       - name: lsb-release
         roles: ["default"]
         platforms:
-          type: Linux
+          type: platform-specific
+          Linux:
+            install_type: standard  
 
       - name: oh-my-posh
         roles: ["default"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: oh-my-zsh
         roles: ["default"]
         platforms:
           type: platform-specific
-          # Darwin:
-            # install_type: shell:sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"  
+          Darwin:
+            install_type: shell:sh -c '[ ! -d "$HOME/.oh-my-zsh" ] && curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh | sh || echo "oh-my-zsh already installed"'
           Linux:    
-            install_type: shell:sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"  
+            install_type: shell:sh -c '[ ! -d "$HOME/.oh-my-zsh" ] && curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh | sh || echo "oh-my-zsh already installed"'
             
-
       - name: neo4j
         roles: ["full-stack"]
         platforms:
           type: universal
+        install_type: standard
 
 #      - name: neo4j-desktop
 #        roles: ["full-stack"]
@@ -334,6 +385,7 @@
         roles: ["default"]
         platforms:
           type: universal
+        install_type: standard
 
       - name: sdkman
         roles: ["default"]
@@ -341,86 +393,346 @@
           type: platform-specific
           Darwin:
             install_type: special:sdkman_install
+      
+      - name: iterm2
+        roles: ["default"]
+        platforms:
+          type: platform-specific
+          Darwin:
+            install_type: standard:iterm2
 
+      - name: yq
+        roles: ["default"]
+        platforms:
+          type: universal
+        install_type: standard
+
+      - name: fd
+        roles: ["default"]
+        platforms:
+          type: universal
+        install_type: standard
+
+      - name: azure-cli
+        roles: ["default"]
+        platforms:
+          type: universal
+        install_type: standard
+
+      - name: google-cloud-sdk
+        roles: ["default"]
+        platforms:
+          type: universal
+        install_type: standard
+
+      - name: awscli
+        roles: ["default"]
+        platforms:
+          type: universal
+        install_type: standard
 
   tasks:
 
-    - name: Install ansible.windows collection
+    # Debug and information tasks - only these should be 'always'
+#    - name: Debug tools variable
+#      ansible.builtin.debug:
+#        msg: "{{ tools }}"
+#      tags: ['always']
+
+#    - name: Debug each tool in tools
+#      ansible.builtin.debug:
+#        msg: "Tool: {{ item }}"
+#      loop: "{{ tools }}"
+#      tags: ['always']
+
+    # Include Windows tasks only if we're on Windows
+    - name: Include Windows tasks
+      include_tasks: "{{ playbook_dir }}/windows_tasks.yml"
+      when: 
+        - ansible_facts['os_family'] == 'Windows'
+        - ansible_facts['distribution'] != 'MacOSX'
+
+    - name: Install Xcode Command Line Tools
       ansible.builtin.shell: |
-        ansible-galaxy collection install ansible.windows
+        if ! xcode-select --print-path &>/dev/null; then
+          xcode-select --install
+        else
+          echo "Xcode Command Line Tools are already installed."
+        fi
+      args:
+        executable: /bin/bash
+      when: 
+        - item.platforms['Darwin'] is defined
+        - item.platforms['Darwin']['install_type'] == "special:xcode_install"
+      loop: "{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | list }}"
       tags:
         - setup
 
-    - name: Install Chocolatey on Windows
-      ansible.builtin.raw: |
-        Set-ExecutionPolicy Bypass -Scope Process -Force;
-        [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12;
-        iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-      when: ansible_facts['os_family'] == "Windows"
-      tags:
-        - setup
-
-    - name: Install universal tools
+    # Universal tools installation
+    - name: Install universal tools on Linux
       ansible.builtin.package:
         name: "{{ item.name }}"
         state: present
-      loop: "{{ tools | selectattr('platforms.type', 'equalto', 'universal') | list }}"
-      tags:
-        - always
+      loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | list }}{% endif %}"
+      when: ansible_facts['os_family'] == 'Linux'
+      tags: ['install']
+      
+    - name: Install universal tools on macOS
+      community.general.homebrew:
+        name: "{{ item.name }}"
+        state: present
+      loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | list }}{% endif %}"
+      when: ansible_facts['os_family'] == 'Darwin'
+      tags: ['install']
+        
+    # Install platform-specific tools
+    - name: Install platform-specific tools with package manager
+      ansible.builtin.package:
+        name: "{{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}"
+        state: present
+      loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | list }}{% endif %}"
+      when: 
+        - item.platforms[ansible_facts['os_family']] is defined
+        - item.platforms[ansible_facts['os_family']]['install_type'].startswith('standard:')
+        - ansible_facts['os_family'] == 'Linux'
+      tags: ['install']
 
-    - name: Install platform-specific tools
+    - name: Install platform-specific tools with homebrew
+      community.general.homebrew:
+        name: "{{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}"
+        state: present
+      loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | list }}{% endif %}"
+      when: 
+        - item.platforms[ansible_facts['os_family']] is defined
+        - item.platforms[ansible_facts['os_family']]['install_type'].startswith('standard:')
+        - ansible_facts['os_family'] == 'Darwin'
+      tags: ['install']
+
+    - name: Install platform-specific tools with shell commands
       ansible.builtin.shell:
-        cmd: >
-          {% if item.platforms[ansible_facts['os_family']]['install_type'].startswith('standard:') %}
-            {{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}
-          {% elif item.platforms[ansible_facts['os_family']]['install_type'].startswith('shell:') %}
-            {{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}
-          {% else %}
-            echo "Unsupported install_type for {{ item.name }}"
-          {% endif %}
-      loop: "{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | list }}"
-      when: item.platforms[ansible_facts['os_family']] is defined
-      tags:
-        - always
+        cmd: "{{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}"
+      loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | list }}{% endif %}"
+      when: 
+        - item.platforms[ansible_facts['os_family']] is defined
+        - item.platforms[ansible_facts['os_family']]['install_type'].startswith('shell:')
+      tags: ['install']
+
+    - name: Debug platform-specific single app
+      ansible.builtin.debug:
+        msg: >
+          Platform: {{ ansible_facts['os_family'] }}
+          Item: {{ item | to_yaml }}
+          Install type: {{ item.platforms[ansible_facts['os_family']]['install_type'] }}
+      loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | list }}{% endif %}"
+      when: single_app is defined
+      tags: ['install']
 
     - name: Install SDKMAN
       ansible.builtin.shell:
         cmd: |
           curl -s "https://get.sdkman.io" | bash && \
           echo 'export SDKMAN_DIR="$HOME/.sdkman"' >> ~/.zshrc && \
-          echo '[[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"' >> ~/.zshrc && \
-          source ~/.zshrc
-      when: item.platforms.install_type is defined and item.platforms.install_type == "special:sdkman_install"
+          echo '[[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"' >> ~/.zshrc
+      args:
+        executable: /bin/zsh
+      loop: "{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | selectattr('platforms.Darwin.install_type', 'equalto', 'special:sdkman_install') | list }}"
+      when: 
+        - item.platforms.Darwin is defined
+        - ansible_facts['os_family'] == 'Darwin'
       tags:
-        - always
+        - install
 
-#    - name: Install Neo4j Desktop on Darwin
-#      ansible.builtin.shell: |
-#        curl -O https://neo4j.com/artifact.php?name=neo4j-desktop-1.5.8.dmg &&
-#        hdiutil attach neo4j-desktop-1.5.8.dmg &&
-#        cp -R /Volumes/Neo4j\ Desktop/Neo4j\ Desktop.app /Applications &&
-#        hdiutil detach /Volumes/Neo4j\ Desktop
-#      when: ansible_facts['os_family'] == "Darwin"
-#      args:
-#        creates: /Applications/Neo4j\ Desktop.app
+#    - name: Debug current item
+#      ansible.builtin.debug:
+#        msg: "Current item: {{ item }}"
+#      loop: "{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | list }}"
 #      tags:
-#        - full-stack
+#        - install
 
-#    - name: Install Neo4j Desktop on Linux
-#      ansible.builtin.shell: |
-#        wget https://neo4j.com/artifact.php?name=neo4j-desktop-1.5.8-linux.deb &&
-#        sudo dpkg -i neo4j-desktop-1.5.8-linux.deb
-#      when: ansible_facts['os_family'] == "Linux"
-#      args:
-#        creates: /usr/bin/neo4j-desktop
-#      tags:
-#        - full-stack
+    # Uninstall tasks for Linux/macOS
+    - name: Uninstall universal tools on Linux
+      ansible.builtin.package:
+        name: "{{ item.name }}"
+        state: absent
+      loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | list }}{% endif %}"
+      when: ansible_facts['os_family'] == 'Linux'
+      ignore_errors: true
+      tags: ['uninstall']
 
-#    - name: Install Neo4j Desktop on Windows
-#      ansible.windows.win_chocolatey:
-#        name: neo4j-desktop
-#        state: present
-#      when: ansible_facts['os_family'] == "Windows"
+    - name: Uninstall universal tools on macOS
+      community.general.homebrew:
+        name: "{{ item.name }}"
+        state: absent
+      loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | list }}{% endif %}"
+      when: ansible_facts['os_family'] == 'Darwin'
+      ignore_errors: true
+      tags: ['uninstall']
+
+    # Uninstall platform-specific tools
+    - name: Uninstall platform-specific tools with package manager
+      ansible.builtin.package:
+        name: "{{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}"
+        state: absent
+      loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | list }}{% endif %}"
+      when: 
+        - item.platforms[ansible_facts['os_family']] is defined
+        - item.platforms[ansible_facts['os_family']]['install_type'].startswith('standard:')
+        - ansible_facts['os_family'] == 'Linux'
+      ignore_errors: true
+      tags: ['uninstall']
+
+    - name: Uninstall platform-specific tools with homebrew
+      community.general.homebrew:
+        name: "{{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}"
+        state: absent
+      loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | list }}{% endif %}"
+      when: 
+        - item.platforms[ansible_facts['os_family']] is defined
+        - item.platforms[ansible_facts['os_family']]['install_type'].startswith('standard:')
+        - ansible_facts['os_family'] == 'Darwin'
+      ignore_errors: true
+      tags: ['uninstall']
+
+
+    # Uninstall role-based universal tools
+    - name: Uninstall role-based universal tools on Linux
+      ansible.builtin.package:
+        name: "{{ item.name }}"
+        state: absent
+      loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | list }}{% endif %}"
+      when: ansible_facts['os_family'] == 'Linux'
+      ignore_errors: true
+      tags: ['uninstall']
+
+
+    - name: Uninstall role-based universal tools on macOS
+      community.general.homebrew:
+        name: "{{ item.name }}"
+        state: absent
+      loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | list }}{% endif %}"
+      when: ansible_facts['os_family'] == 'Darwin'
+      ignore_errors: true
+      tags: ['uninstall']
+
+    # Role-based uninstall
+    - name: Uninstall role-based platform-specific tools with package manager
+      ansible.builtin.package:
+        name: "{{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}"
+        state: absent
+      loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | list }}{% endif %}"
+      when: 
+        - item.platforms[ansible_facts['os_family']] is defined
+        - item.platforms[ansible_facts['os_family']]['install_type'].startswith('standard:')
+        - ansible_facts['os_family'] == 'Linux'
+      ignore_errors: true
+      tags: ['uninstall']
+
+    - name: Uninstall role-based platform-specific tools with homebrew
+      community.general.homebrew:
+        name: "{{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}"
+        state: absent
+      loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | list }}{% endif %}"
+      when: 
+        - item.platforms[ansible_facts['os_family']] is defined
+        - item.platforms[ansible_facts['os_family']]['install_type'].startswith('standard:')
+        - ansible_facts['os_family'] == 'Darwin'
+      ignore_errors: true
+      tags: ['uninstall']
+
+#    - name: Log unsupported tools
+#      ansible.builtin.debug:
+#        msg: "Tool {{ item.name }} has no valid install_type for {{ ansible_facts['os_family'] }}. Skipping..."
+#      loop: "{{ tools | selectattr('platforms.type', 'equalto', 'universal') | list }}"
+#      when: 
+#        - item.platforms is defined
+#        - item.platforms[ansible_facts['os_family']] is defined
+#        - item.platforms[ansible_facts['os_family']]['install_type'] is not defined
 #      tags:
-#        - full-stack
+#        - always
+
+    # Debug uninstallation results
+#    - name: Debug uninstallation results
+#      ansible.builtin.debug:
+#        var: uninstall_results
+#      tags:
+#        - unintall 
+
+    # Uninstall SDKMAN
+    - name: Uninstall SDKMAN
+      ansible.builtin.shell:
+        cmd: rm -rf ~/.sdkman
+      loop: "{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | selectattr('platforms.Darwin.install_type', 'equalto', 'special:sdkman_install') | list }}"
+      when:
+        - item.platforms.Darwin is defined
+        - ansible_facts['os_family'] == 'Darwin'
+      tags:
+        - uninstall
+
+    - name: Create base project directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - ~/Developer/01-ToSync/01-50-Projects/00-ProjectTemplate/01-Docs/01-Requirements
+        - ~/Developer/01-ToSync/01-50-Projects/00-ProjectTemplate/01-Docs/02-Draft
+        - ~/Developer/01-ToSync/01-50-Projects/00-ProjectTemplate/01-Docs/03-Design
+        - ~/Developer/01-ToSync/01-50-Projects/00-ProjectTemplate/01-Docs/04-Prototype
+        - ~/Developer/01-ToSync/01-50-Projects/00-ProjectTemplate/01-Docs/05-DevelopmentNotes
+        - ~/Developer/01-ToSync/01-50-Projects/00-ProjectTemplate/01-Docs/06-TestingPlans
+        - ~/Developer/01-ToSync/01-50-Projects/00-ProjectTemplate/01-Docs/07-ReferenceMaterials
+        - ~/Developer/01-ToSync/01-50-Projects/00-ProjectTemplate/03-Src
+        - ~/Developer/01-ToSync/01-50-Projects/00-ProjectTemplate/05-Tests/01-UnitTests
+        - ~/Developer/01-ToSync/01-50-Projects/00-ProjectTemplate/05-Tests/02-IntegrationTests
+        - ~/Developer/01-ToSync/01-50-Projects/00-ProjectTemplate/05-Tests/03-EndToEndTests
+        - ~/Developer/01-ToSync/01-50-Projects/00-ProjectTemplate/07-Deliverables/01-WeeklyReports
+        - ~/Developer/01-ToSync/01-50-Projects/00-ProjectTemplate/07-Deliverables/02-MonthlyReviews
+        - ~/Developer/01-ToSync/01-50-Projects/00-ProjectTemplate/07-Deliverables/03-QuarterlyReviews
+        - ~/Developer/01-ToSync/01-50-Projects/00-ProjectTemplate/07-Deliverables/04-InitialProposal
+        - ~/Developer/01-ToSync/01-50-Projects/00-ProjectTemplate/07-Deliverables/05-TechnicalSpecs
+        - ~/Developer/01-ToSync/01-50-Projects/00-ProjectTemplate/07-Deliverables/06-FinalReport
+        - ~/Developer/01-ToSync/01-50-Projects/00-ProjectTemplate/07-Deliverables/07-Presentations
+        - ~/Developer/05-SyncSelected/05-50-Projects/00-ProjectTemplate/01-Docs/01-Requirements
+        - ~/Developer/05-SyncSelected/05-50-Projects/00-ProjectTemplate/01-Docs/02-Draft
+        - ~/Developer/05-SyncSelected/05-50-Projects/00-ProjectTemplate/01-Docs/03-Design
+        - ~/Developer/05-SyncSelected/05-50-Projects/00-ProjectTemplate/01-Docs/04-Prototype
+        - ~/Developer/05-SyncSelected/05-50-Projects/00-ProjectTemplate/01-Docs/05-DevelopmentNotes
+        - ~/Developer/05-SyncSelected/05-50-Projects/00-ProjectTemplate/01-Docs/06-TestingPlans
+        - ~/Developer/05-SyncSelected/05-50-Projects/00-ProjectTemplate/01-Docs/07-ReferenceMaterials
+        - ~/Developer/05-SyncSelected/05-50-Projects/00-ProjectTemplate/03-Src
+        - ~/Developer/05-SyncSelected/05-50-Projects/00-ProjectTemplate/05-Tests/01-UnitTests
+        - ~/Developer/05-SyncSelected/05-50-Projects/00-ProjectTemplate/05-Tests/02-IntegrationTests
+        - ~/Developer/05-SyncSelected/05-50-Projects/00-ProjectTemplate/05-Tests/03-EndToEndTests
+        - ~/Developer/05-SyncSelected/05-50-Projects/00-ProjectTemplate/07-Deliverables/01-WeeklyReports
+        - ~/Developer/05-SyncSelected/05-50-Projects/00-ProjectTemplate/07-Deliverables/02-MonthlyReviews
+        - ~/Developer/05-SyncSelected/05-50-Projects/00-ProjectTemplate/07-Deliverables/03-QuarterlyReviews
+        - ~/Developer/05-SyncSelected/05-50-Projects/00-ProjectTemplate/07-Deliverables/04-InitialProposal
+        - ~/Developer/05-SyncSelected/05-50-Projects/00-ProjectTemplate/07-Deliverables/05-TechnicalSpecs
+        - ~/Developer/05-SyncSelected/05-50-Projects/00-ProjectTemplate/07-Deliverables/06-FinalReport
+        - ~/Developer/05-SyncSelected/05-50-Projects/00-ProjectTemplate/07-Deliverables/07-Presentations
+        - ~/Developer/09-NoSync/09-50-Projects/00-ProjectTemplate/01-Docs/01-Requirements
+        - ~/Developer/09-NoSync/09-50-Projects/00-ProjectTemplate/01-Docs/02-Draft
+        - ~/Developer/09-NoSync/09-50-Projects/00-ProjectTemplate/01-Docs/03-Design
+        - ~/Developer/09-NoSync/09-50-Projects/00-ProjectTemplate/01-Docs/04-Prototype
+        - ~/Developer/09-NoSync/09-50-Projects/00-ProjectTemplate/01-Docs/05-DevelopmentNotes
+        - ~/Developer/09-NoSync/09-50-Projects/00-ProjectTemplate/01-Docs/06-TestingPlans
+        - ~/Developer/09-NoSync/09-50-Projects/00-ProjectTemplate/01-Docs/07-ReferenceMaterials
+        - ~/Developer/09-NoSync/09-50-Projects/00-ProjectTemplate/03-Src
+        - ~/Developer/09-NoSync/09-50-Projects/00-ProjectTemplate/05-Tests/01-UnitTests
+        - ~/Developer/09-NoSync/09-50-Projects/00-ProjectTemplate/05-Tests/02-IntegrationTests
+        - ~/Developer/09-NoSync/09-50-Projects/00-ProjectTemplate/05-Tests/03-EndToEndTests
+        - ~/Developer/09-NoSync/09-50-Projects/00-ProjectTemplate/07-Deliverables/01-WeeklyReports
+        - ~/Developer/09-NoSync/09-50-Projects/00-ProjectTemplate/07-Deliverables/02-MonthlyReviews
+        - ~/Developer/09-NoSync/09-50-Projects/00-ProjectTemplate/07-Deliverables/03-QuarterlyReviews
+        - ~/Developer/09-NoSync/09-50-Projects/00-ProjectTemplate/07-Deliverables/04-InitialProposal
+        - ~/Developer/09-NoSync/09-50-Projects/00-ProjectTemplate/07-Deliverables/05-TechnicalSpecs
+        - ~/Developer/09-NoSync/09-50-Projects/00-ProjectTemplate/07-Deliverables/06-FinalReport
+        - ~/Developer/09-NoSync/09-50-Projects/00-ProjectTemplate/07-Deliverables/07-Presentations
+      tags: ['install']
+
+    - name: Fail if tools is not defined or empty
+      ansible.builtin.fail:
+        msg: "The 'tools' variable is not defined or contains no data!"
+      when: tools is not defined or tools | length == 0
+      tags:
+        - setup
 

@@ -1,56 +1,107 @@
-
+```text
 # Development Environment Setup
 
-This repository contains scripts and configurations to set up a development environment across macOS, Linux, and Windows using Ansible.
+An Ansible-based cross-platform development environment setup tool that provides role-based installation of development tools.
 
-## How to Use
+## Prerequisites
 
-### Step 1: Clone the Repository
-Clone this repository to your local machine:
+- Git (for cloning the repository)
+- macOS or Linux or Windows with WSL
+- Internet connection
+
+## Installation Methods
+
+### Direct Installation from GitHub
+
+```bash
+# macOS
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/hujambo-io/dev-setup/main/bootstrap-macos.sh)" -- --role default
+
+# Linux
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/hujambo-io/dev-setup/main/bootstrap-linux.sh)" -- --role default
+
+# Windows (PowerShell)
+irm https://raw.githubusercontent.com/hujambo-io/dev-setup/main/bootstrap-windows.ps1 | iex; bootstrap-windows --role default
+```
+
+### Manual Installation
+
+1. Clone and run:
 ```bash
 git clone https://github.com/hujambo-io/dev-setup.git
 cd dev-setup
-Step 2: Run the Bootstrap Script
-Run the appropriate bootstrap script for your operating system:
+./bootstrap-macos.sh --role default   # For macOS
+./bootstrap-linux.sh --role default   # For Linux
+./bootstrap-windows.ps1 --role default # For Windows
+```
 
-macOS
+## Available Roles
 
-./bootstrap-macos.sh
-Linux
+- `default`: Basic development tools (git, VSCode, etc.)
+- `frontend`: Frontend development tools
+- `backend`: Backend development tools
+- `mobile`: Mobile development tools
+- `full-stack`: All development tools
+- `QA`: Testing and QA tools
 
-./bootstrap-linux.sh
-Windows
+## Usage Examples
 
-powershell ./bootstrap-windows.ps1
-These scripts will:
+```bash
+# Install basic development tools
+./bootstrap-macos.sh --role default
 
-Install Ansible (if not already installed).
-Pull the necessary playbook files.
-Execute the playbook.yml to set up your development environment.
-Deprecated Methods
+# Install backend development tools
+./bootstrap-macos.sh --role backend
 
-The following methods are deprecated and will be removed in future updates.
+# Install all tools
+./bootstrap-macos.sh --role full-stack
 
-Bash-Based Script
-/bin/zsh setup.sh
-Remote Execution via curl or wget
-/bin/zsh -c "$(wget -qO- https://raw.githubusercontent.com/hujambo-io/dev-setup/main/setup.sh)"
-/bin/zsh -c "$(curl -fsSL https://raw.githubusercontent.com/hujambo-io/dev-setup/main/setup.sh)"
-While these methods still work, we recommend transitioning to the Ansible-based approach for a more robust and cross-platform setup process.
+# Uninstall specific role tools
+./bootstrap-macos.sh --uninstall --role mobile
 
-Additional Notes
+# Uninstall everything
+./bootstrap-macos.sh --uninstall
 
-The new Ansible-based approach supports macOS, Linux, and Windows.
-It ensures idempotent execution, meaning tools will only be installed if they are missing.
-For detailed platform-specific instructions, refer to the comments in the playbook (playbook.yml).
-Contributing
+# Install single application
+ansible-playbook ansible/playbook.yml --tags install --extra-vars 'single_app=visual-studio-code'
 
-Feel free to submit issues or pull requests to enhance the setup process.
+# Uninstall single application
+ansible-playbook ansible/playbook.yml --tags uninstall --extra-vars 'single_app=visual-studio-code'
+```
 
-License
+Replace `bootstrap-macos.sh` with `bootstrap-linux.sh` or `bootstrap-windows.ps1` as needed.
+
+## Features
+
+- Role-based installation
+- Cross-platform support (macOS, Linux, Windows)
+- Individual tool installation/uninstallation
+- Idempotent execution (safe to run multiple times)
+- Platform-specific package manager support
+  - Homebrew for macOS
+  - apt/dnf/yum/pacman for Linux
+  - Chocolatey for Windows
+
+## Directory Structure
+
+The repository follows this structure:
+```
+dev-setup/
+├── ansible/
+│   ├── playbook.yml
+│   ├── inventory.yml
+│   └── windows_tasks.yml
+├── bootstrap-macos.sh
+├── bootstrap-linux.sh
+├── bootstrap-windows.ps1
+└── README.md
+```
+
+## Contributing
+
+Contributions are welcome! Feel free to submit issues or pull requests.
+
+## License
 
 This project is licensed under the MIT License.
-
-
----
-
+```
