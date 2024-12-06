@@ -5,10 +5,12 @@ $ErrorActionPreference = "Stop"
 # Handle direct installation
 $SCRIPT_SOURCE = "https://github.com/hujambo-io/dev-setup.git"
 $TEMP_DIR = ""
+$ORIGINAL_LOCATION = ""
 
 if ($MyInvocation.MyCommand.Source -eq "") {
     Write-Output "Direct installation detected. Cloning repository..."
-    $TEMP_DIR = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid().ToString())
+    $ORIGINAL_LOCATION = Get-Location
+    $TEMP_DIR = "$env:TEMP\dev-setup-" + [System.Guid]::NewGuid().ToString()
     New-Item -ItemType Directory -Path $TEMP_DIR | Out-Null
     git clone $SCRIPT_SOURCE $TEMP_DIR
     Set-Location $TEMP_DIR
@@ -181,10 +183,10 @@ try {
     exit 1
 }
 
-# Add cleanup at the end
+# Cleanup
 if ($TEMP_DIR -ne "") {
     Write-Output "Cleaning up temporary files..."
-    Set-Location $env:OLDPWD
+    Set-Location $ORIGINAL_LOCATION
     Remove-Item -Recurse -Force $TEMP_DIR
 }
 

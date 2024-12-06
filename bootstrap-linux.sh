@@ -6,7 +6,8 @@ set -e
 
 # Handle direct installation
 SCRIPT_SOURCE="https://github.com/hujambo-io/dev-setup.git"
-TEMP_DIR=""
+TEMP_DIR="/tmp/dev-setup"
+ORIGINAL_DIR=""
 
 if [[ "$0" == "/dev/stdin" ]]; then
     echo "Direct installation detected. Cloning repository..."
@@ -207,7 +208,7 @@ fi
 # Add cleanup at the end
 if [[ -n "$TEMP_DIR" ]]; then
     echo "Cleaning up temporary files..."
-    cd "$OLDPWD"
+    cd "$ORIGINAL_DIR"
     rm -rf "$TEMP_DIR"
 fi
 
