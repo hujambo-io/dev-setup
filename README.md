@@ -1,4 +1,3 @@
-```text
 # Development Environment Setup
 
 An Ansible-based cross-platform development environment setup tool that provides role-based installation of development tools.
@@ -104,4 +103,3 @@ Contributions are welcome! Feel free to submit issues or pull requests.
 ## License
 
 This project is licensed under the MIT License.
-```
