@@ -7,140 +7,140 @@
         roles: ["default"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:git
 
       - name: wget
         roles: ["default"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:wget
 
       - name: vim
         roles: ["default"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:vim
 
       - name: htop
         roles: ["default"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:htop
 
       - name: tree
         roles: ["default"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:tree
 
       - name: jq
         roles: ["default"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:jq
 
       - name: nvm
         roles: ["frontend"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:nvm
 
       - name: python
         roles: ["default"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:python
 
       - name: ffmpeg
         roles: ["full-stack"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:ffmpeg
 
       - name: ruby
         roles: ["default"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:ruby
 
       - name: r
         roles: ["full-stack"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:r
 
       - name: rstudio
         roles: ["full-stack"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:rstudio
 
       - name: android-sdk
         roles: ["mobile"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:android-sdk
 
       - name: android-studio
         roles: ["mobile"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:android-studio
 
       - name: mongodb-compass
         roles: ["full-stack"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:mongodb-compass
 
       - name: slack
         roles: ["default"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:slack
 
       - name: zoom
         roles: ["default"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:zoom
 
       - name: postman
         roles: ["default"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:postman
 
       - name: k6
         roles: ["QA"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:k6
 
       - name: httpie
         roles: ["default"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:httpie
 
       - name: bruno
         roles: ["default"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:bruno
 
       - name: selenium-server
         roles: ["QA"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:selenium-server
 
       - name: firefox
         roles: ["default"]
         platforms:
           type: platform-specific
           Darwin:
-            install_type: standard
+            install_type: standard:firefox
           Linux:
             install_type: standard:firefox
           Windows:
@@ -150,25 +150,25 @@
         roles: ["default"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:curl
 
       - name: zsh
         roles: ["default"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:zsh
 
       - name: tmux
         roles: ["default"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:tmux
 
       - name: telnet
         roles: ["default"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:telnet
 
       - name: docker
         roles: ["default"]
@@ -185,40 +185,40 @@
         roles: ["backend"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:miniconda
 
       - name: flutter
         roles: ["mobile"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:flutter
 
       - name: cocoapods
         roles: ["mobile"]
         platforms:
           type: platform-specific
           Darwin:
-            install_type: standard
+            install_type: standard:cocoapods
             # shell:brew install brew-gem && && brew link --force brew-gem && gem install cocoapods
 
       - name: android-platform-tools
         roles: ["mobile"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:android-platform-tools
 
       - name: fastlane
         roles: ["mobile"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:fastlane
 
       - name: google-chrome
         roles: ["default"]
         platforms:
           type: platform-specific
           Darwin:
-            install_type: standard
+            install_type: standard:google-chrome
           Linux:
             install_type: standard:google-chrome-stable
           Windows:
@@ -229,7 +229,7 @@
         platforms:
           type: platform-specific
           Darwin:
-            install_type: standard
+            install_type: standard:microsoft-edge
           Linux:
             install_type: standard:microsoft-edge-stable
           Windows:
@@ -239,20 +239,20 @@
         roles: ["default"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:visual-studio-code
 
       - name: intellij-idea-ce
         roles: ["default"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:intellij-idea-ce
 
       - name: netbeans
         roles: ["full-stack"]
         platforms:
           type: platform-specific
           Darwin:
-            install_type: standard
+            install_type: standard:netbeans
           Linux:
             install_type: standard:netbeans-linux-deb-package
           Windows:
@@ -262,7 +262,7 @@
         roles: ["full-stack"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:eclipse-java
 
       - name: papyrus
         roles: ["full-stack"]
@@ -279,14 +279,14 @@
         roles: ["default"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:font-fira-code
 
       - name: syncthing
         roles: ["default"]
         platforms:
           type: platform-specific
           Darwin:
-            install_type: syncthing
+            install_type: syncthing:syncthing
           Linux:
             install_type: standard:syncthing
           Windows:
@@ -296,7 +296,7 @@
         roles: ["full-stack"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:cypher-shell
 
       - name: protobuf-compiler
         roles: ["default"]
@@ -325,34 +325,34 @@
         platforms:
           type: platform-specific
           Linux:
-            install_type: standard
+            install_type: standard:apt-transport-https
 
       - name: ca-certificates
         roles: ["default"]
         platforms:
           type: platform-specific
           Linux:
-            install_type: standard  
+            install_type: standard:ca-certificates
 
       - name: gnupg
         roles: ["default"]
         platforms:
           type: platform-specific
           Linux:
-            install_type: standard
+            install_type: standard:gnupg
 
       - name: lsb-release
         roles: ["default"]
         platforms:
           type: platform-specific
           Linux:
-            install_type: standard  
+            install_type: standard:lsb-release
 
       - name: oh-my-posh
         roles: ["default"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:on-my-posh
 
       - name: oh-my-zsh
         roles: ["default"]
@@ -367,7 +367,7 @@
         roles: ["full-stack"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:neo4j
 
 #      - name: neo4j-desktop
 #        roles: ["full-stack"]
@@ -384,7 +384,7 @@
         roles: ["default"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:zip
 
       - name: sdkman
         roles: ["default"]
@@ -404,31 +404,43 @@
         roles: ["default"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:yq
 
       - name: fd
         roles: ["default"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:fd
 
       - name: azure-cli
         roles: ["default"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:azure-cli
 
       - name: google-cloud-sdk
         roles: ["default"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:google-cloud-sdk
 
       - name: awscli
         roles: ["default"]
         platforms:
           type: universal
-        install_type: standard
+        install_type: standard:awscli
+
+      - name: notion
+        roles: ["default"]
+        platforms:
+          type: univeral 
+        install_type: standard:notion
+      
+      - name: notion-calendar
+        roles: ["default"]
+        platforms:
+          type: universal
+        install_type: standard:notion-calendar
 
   tasks:
 

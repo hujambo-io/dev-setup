@@ -77,6 +77,20 @@ check_prerequisites() {
         echo "Error: Playbook not found at $PLAYBOOK"
         exit 1
     fi
+    # Check for Homebrew and install if not found
+    if ! command -v brew &> /dev/null; then
+        echo "Homebrew not found. Installing Homebrew..."
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        
+        # Add Homebrew to your PATH in zsh based on architecture
+        if [[ $(uname -m) == 'arm64' ]]; then
+            echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zshrc
+            eval "$(/opt/homebrew/bin/brew shellenv)"
+        else
+            echo 'eval "$(/usr/local/bin/brew shellenv)"' >> ~/.zshrc
+            eval "$(/usr/local/bin/brew shellenv)"
+        fi
+    fi
 
     # Check if ansible is installed
     if ! command -v ansible-playbook &> /dev/null; then
