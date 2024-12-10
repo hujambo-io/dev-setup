@@ -76,7 +76,26 @@
   tags:
     - uninstall
 
+# Install asdf on Windows
+- name: Install asdf on Windows
+  ansible.builtin.win_shell: |
+    git clone https://github.com/asdf-vm/asdf.git "$HOME/.asdf" --branch v0.13.1
+    echo '. "$HOME/.asdf/asdf.ps1"' >> $PROFILE
+  loop: "{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | selectattr('platforms.Windows.install_type', 'equalto', 'special:asdf_install') | list }}"
+  when: 
+    - item.platforms['Windows'] is defined
+  tags: ['install']
 
+# Uninstall asdf on Windows
+- name: Uninstall asdf on Windows
+  ansible.builtin.win_shell: |
+    Remove-Item -Recurse -Force "$HOME/.asdf" -ErrorAction SilentlyContinue
+  loop: "{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | selectattr('platforms.Windows.install_type', 'equalto', 'special:asdf_install') | list }}"
+  when:
+    - item.platforms['Windows'] is defined
+  ignore_errors: true
+  tags: ['uninstall']
+  
 #    - name: Install universal tools on Windows
 #      community.windows.win_chocolatey:
 #        name: "{{ item.name }}"

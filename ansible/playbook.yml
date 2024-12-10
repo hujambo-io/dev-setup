@@ -386,13 +386,24 @@
           type: universal
         install_type: standard:zip
 
-      - name: sdkman
+#      - name: sdkman
+#        roles: ["default"]
+#        platforms:
+#          type: platform-specific
+#          Windows:
+#            install_type: special:sdkman_install_windows
+
+      - name: asdf
         roles: ["default"]
         platforms:
           type: platform-specific
           Darwin:
-            install_type: special:sdkman_install
-      
+            install_type: standard:asdf
+          Linux:
+            install_type: special:asdf_install
+          Windows:
+            install_type: special:asdf_install
+
       - name: iterm2
         roles: ["default"]
         platforms:
@@ -441,6 +452,18 @@
         platforms:
           type: universal
         install_type: standard:notion-calendar
+      
+      - name: nomachine
+        roles: ["default"]
+        platforms:
+          type: universal
+        install_type: standard:nomachine
+
+      - name: raycast
+        roles: ["default"]
+        platforms:
+          type: universal
+        install_type: standard:raycast
 
   tasks:
 
@@ -479,6 +502,117 @@
       tags:
         - setup
 
+    - name: Debug sdkman details
+      ansible.builtin.debug:
+        msg: |
+          Item: {{ item | to_yaml }}
+          Install type: {{ item.platforms['Darwin']['install_type'] }}
+      loop: "{{ tools | selectattr('name', 'equalto', 'sdkman') | list }}"
+      tags: ['install']
+
+    - name: Install sdkman
+      ansible.builtin.shell:
+        cmd: |
+          if [ ! -d "$HOME/.sdkman" ]; then
+            curl -s "https://get.sdkman.io" | bash && \
+            echo 'export SDKMAN_DIR="$HOME/.sdkman"' >> ~/.zshrc && \
+            echo '[[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"' >> ~/.zshrc
+            echo "sdkman installed successfully"
+          else
+            echo "sdkman is already installed"
+          fi
+      args:
+        executable: /bin/zsh
+      loop: "{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | selectattr('platforms.Darwin.install_type', 'equalto', 'special:sdkman_install') | list }}"
+      when:
+        - item.platforms['Darwin'] is defined
+        - ansible_facts['os_family'] == 'Darwin'
+      register: sdkman_install_result
+      changed_when: "'installed successfully' in sdkman_install_result.stdout"
+      tags:
+        - install
+
+    # Uninstall sdkman
+    - name: Uninstall sdkman
+      ansible.builtin.shell:
+        cmd: rm -rf ~/.sdkman
+      loop: "{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | selectattr('platforms.Darwin.install_type', 'equalto', 'special:sdkman_install') | list }}"
+      when:
+        - item.platforms.Darwin is defined
+        - ansible_facts['os_family'] == 'Darwin'
+      tags:
+        - uninstall
+
+
+    - name: Install asdf
+      ansible.builtin.shell:
+        cmd: |
+          if [ ! -d "$HOME/.asdf" ]; then
+            git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.13.1
+            if [ "{{ ansible_facts['os_family'] }}" == "Darwin" ]; then
+              echo '. "$HOME/.asdf/asdf.sh"' >> ~/.zshrc
+              echo '. "$HOME/.asdf/completions/asdf.bash"' >> ~/.zshrc
+            else
+              echo '. "$HOME/.asdf/asdf.sh"' >> ~/.bashrc
+              echo '. "$HOME/.asdf/completions/asdf.bash"' >> ~/.bashrc
+            fi
+            echo "asdf installed successfully"
+          else
+            echo "asdf already installed"
+          fi
+      args:
+        executable: /bin/bash
+      loop: "{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | selectattr('platforms.Linux.install_type', 'equalto', 'special:asdf_install') | list }}"
+      when:
+        - item.platforms['Linux'] is defined
+        - ansible_facts['os_family'] == 'Linux'
+      register: asdf_install_result
+      changed_when: "'installed successfully' in asdf_install_result.stdout"
+      tags:
+        - install
+
+    - name: Check asdf plugins
+      ansible.builtin.shell:
+        cmd: |
+          . "$HOME/.asdf/asdf.sh"
+          asdf plugin list | grep -q "." || {
+            asdf plugin add java
+            asdf plugin add nodejs
+            asdf plugin add python
+            asdf plugin add flutter
+          }
+      args:
+        executable: /bin/bash
+      tags: ['install']
+
+    - name: Install default versions (only if no versions exist)
+      ansible.builtin.shell:
+        cmd: |
+          . "$HOME/.asdf/asdf.sh"
+          asdf list | grep -q "." || {
+            asdf install java latest
+            asdf global java latest
+            asdf install nodejs latest
+            asdf global nodejs latest
+            asdf install python latest
+            asdf global python latest
+            asdf install flutter latest
+            asdf global flutter latest
+          }
+      args:
+        executable: /bin/bash
+      tags: ['install']
+
+    - name: Uninstall asdf
+      ansible.builtin.shell:
+        cmd: rm -rf ~/.asdf
+      loop: "{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | selectattr('platforms.Darwin.install_type', 'equalto', 'special:asdf_install') | list }}"
+      when:
+        - item.platforms[ansible_facts['os_family']] is defined
+        - ansible_facts['os_family'] in ['Darwin', 'Linux']
+      tags:
+        - uninstall
+
     # Universal tools installation
     - name: Install universal tools on Linux
       ansible.builtin.package:
@@ -505,6 +639,7 @@
       when: 
         - item.platforms[ansible_facts['os_family']] is defined
         - item.platforms[ansible_facts['os_family']]['install_type'].startswith('standard:')
+        - not item.platforms[ansible_facts['os_family']]['install_type'].startswith('special:')
         - ansible_facts['os_family'] == 'Linux'
       tags: ['install']
 
@@ -516,6 +651,7 @@
       when: 
         - item.platforms[ansible_facts['os_family']] is defined
         - item.platforms[ansible_facts['os_family']]['install_type'].startswith('standard:')
+        - not item.platforms[ansible_facts['os_family']]['install_type'].startswith('special:')
         - ansible_facts['os_family'] == 'Darwin'
       tags: ['install']
 
@@ -526,6 +662,7 @@
       when: 
         - item.platforms[ansible_facts['os_family']] is defined
         - item.platforms[ansible_facts['os_family']]['install_type'].startswith('shell:')
+        - not item.platforms[ansible_facts['os_family']]['install_type'].startswith('special:')
       tags: ['install']
 
     - name: Debug platform-specific single app
@@ -537,21 +674,6 @@
       loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | list }}{% endif %}"
       when: single_app is defined
       tags: ['install']
-
-    - name: Install SDKMAN
-      ansible.builtin.shell:
-        cmd: |
-          curl -s "https://get.sdkman.io" | bash && \
-          echo 'export SDKMAN_DIR="$HOME/.sdkman"' >> ~/.zshrc && \
-          echo '[[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"' >> ~/.zshrc
-      args:
-        executable: /bin/zsh
-      loop: "{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | selectattr('platforms.Darwin.install_type', 'equalto', 'special:sdkman_install') | list }}"
-      when: 
-        - item.platforms.Darwin is defined
-        - ansible_facts['os_family'] == 'Darwin'
-      tags:
-        - install
 
 #    - name: Debug current item
 #      ansible.builtin.debug:
@@ -668,21 +790,19 @@
 #      tags:
 #        - unintall 
 
-    # Uninstall SDKMAN
-    - name: Uninstall SDKMAN
-      ansible.builtin.shell:
-        cmd: rm -rf ~/.sdkman
-      loop: "{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | selectattr('platforms.Darwin.install_type', 'equalto', 'special:sdkman_install') | list }}"
-      when:
-        - item.platforms.Darwin is defined
-        - ansible_facts['os_family'] == 'Darwin'
-      tags:
-        - uninstall
+
+
+    - name: Check if project structure exists
+      ansible.builtin.stat:
+        path: "~/Developer/01-ToSync/01-50-Projects/00-ProjectTemplate"
+      register: project_template_dir
+      tags: ['install']
 
     - name: Create base project directories
       ansible.builtin.file:
         path: "{{ item }}"
         state: directory
+      when: not project_template_dir.stat.exists
       loop:
         - ~/Developer/01-ToSync/01-50-Projects/00-ProjectTemplate/01-Docs/01-Requirements
         - ~/Developer/01-ToSync/01-50-Projects/00-ProjectTemplate/01-Docs/02-Draft
@@ -739,11 +859,3 @@
         - ~/Developer/09-NoSync/09-50-Projects/00-ProjectTemplate/07-Deliverables/06-FinalReport
         - ~/Developer/09-NoSync/09-50-Projects/00-ProjectTemplate/07-Deliverables/07-Presentations
       tags: ['install']
-
-    - name: Fail if tools is not defined or empty
-      ansible.builtin.fail:
-        msg: "The 'tools' variable is not defined or contains no data!"
-      when: tools is not defined or tools | length == 0
-      tags:
-        - setup
-
