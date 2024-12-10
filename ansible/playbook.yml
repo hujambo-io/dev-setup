@@ -465,6 +465,20 @@
           type: universal
         install_type: standard:raycast
 
+      - name: uv
+        roles: ["default"]
+        platforms:
+          type: platform-specific
+          Darwin:
+            install_type: standard:uv
+
+      - name: taplo
+        roles: ["default"]
+        platforms:
+          type: platform-specific
+          Darwin:
+            install_type: standard:taplo
+
   tasks:
 
     # Debug and information tasks - only these should be 'always'
@@ -571,6 +585,12 @@
       tags:
         - install
 
+    - name: Check asdf installation
+      ansible.builtin.stat:
+        path: "{{ ansible_env.HOME }}/.asdf"
+      register: asdf_installation
+      tags: ['install']
+
     - name: Check asdf plugins
       ansible.builtin.shell:
         cmd: |
@@ -583,6 +603,7 @@
           }
       args:
         executable: /bin/bash
+      when: asdf_installation.stat.exists
       tags: ['install']
 
     - name: Install default versions (only if no versions exist)
@@ -601,6 +622,7 @@
           }
       args:
         executable: /bin/bash
+      when: asdf_installation.stat.exists
       tags: ['install']
 
     - name: Uninstall asdf
