@@ -66,13 +66,13 @@ ansible-playbook ansible/playbook.yml --tags install --extra-vars 'single_app=vi
 
 # Uninstall single application
 ansible-playbook ansible/playbook.yml --tags uninstall --extra-vars 'single_app=visual-studio-code'
-```
+
 # Additional Operations
 
 ## Tag-based Operations
 The setup tool now supports tag-based operations for finer control:
 
-```bash
+
 # Initial environment setup
 ./bootstrap-macos.sh --tag bootstrap
 
@@ -81,6 +81,7 @@ The setup tool now supports tag-based operations for finer control:
 
 # Post-installation cleanup
 ./bootstrap-macos.sh --tag finish
+```
 
 Replace `bootstrap-macos.sh` with `bootstrap-linux.sh` or `bootstrap-windows.ps1` as needed.
 
