@@ -67,6 +67,20 @@ ansible-playbook ansible/playbook.yml --tags install --extra-vars 'single_app=vi
 # Uninstall single application
 ansible-playbook ansible/playbook.yml --tags uninstall --extra-vars 'single_app=visual-studio-code'
 ```
+# Additional Operations
+
+## Tag-based Operations
+The setup tool now supports tag-based operations for finer control:
+
+```bash
+# Initial environment setup
+./bootstrap-macos.sh --tag bootstrap
+
+# Create project directory structure
+./bootstrap-macos.sh --tag setup
+
+# Post-installation cleanup
+./bootstrap-macos.sh --tag finish
 
 Replace `bootstrap-macos.sh` with `bootstrap-linux.sh` or `bootstrap-windows.ps1` as needed.
 
@@ -80,6 +94,20 @@ Replace `bootstrap-macos.sh` with `bootstrap-linux.sh` or `bootstrap-windows.ps1
   - Homebrew for macOS
   - apt/dnf/yum/pacman for Linux
   - Chocolatey for Windows
+
+
+Development Tools
+Java Development
+
+Uses asdf for Java version management
+Installs OpenJDK 21 by default
+Configured specifically for Android and Spring Boot development
+
+Flutter Development
+
+Platform-specific installation (uses --cask on macOS)
+Automatic ARM/Intel architecture detection
+Native performance optimization
 
 ## Directory Structure
 
