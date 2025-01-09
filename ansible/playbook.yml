@@ -598,7 +598,7 @@
           asdf install java openjdk-21
           asdf global java openjdk-21
       when: ansible_facts['os_family'] == 'Darwin'
-      tags: ['install']
+      tags: ['java-setup']
 
     # Keep but modify Linux Java setup
     - name: Configure asdf for Java on Linux
@@ -621,7 +621,7 @@
       args:
         executable: /bin/bash
       when: ansible_facts['os_family'] == 'Linux'
-      tags: ['install']
+      tags: ['java-setup']
 
     - name: Uninstall asdf
       ansible.builtin.shell:
