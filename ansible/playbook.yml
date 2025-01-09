@@ -583,10 +583,18 @@
     - name: Configure asdf for Java on macOS
       ansible.builtin.shell:
         cmd: |
+          # Install asdf first if not present
+          if ! command -v asdf &> /dev/null; then
+            brew install asdf
+            echo '. $(brew --prefix asdf)/libexec/asdf.sh' >> ~/.zshrc
+            source ~/.zshrc
+          fi
+          
+          # Source asdf
           . $(brew --prefix asdf)/libexec/asdf.sh
-          # Add only Java plugin if not present
+          
+          # Add Java plugin and install
           asdf plugin list | grep -q "java" || asdf plugin add java
-          # Install specific Java version
           asdf install java openjdk-21
           asdf global java openjdk-21
       when: ansible_facts['os_family'] == 'Darwin'
@@ -596,7 +604,17 @@
     - name: Configure asdf for Java on Linux
       ansible.builtin.shell:
         cmd: |
-          . "$HOME/.asdf/asdf.sh"
+          # Install asdf first if not present
+          if [ ! -d "$HOME/.asdf" ]; then
+            git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.13.1
+            echo '. "$HOME/.asdf/asdf.sh"' >> ~/.bashrc
+            source ~/.bashrc
+          fi
+          
+          # Source asdf
+          . $HOME/.asdf/asdf.sh
+          
+          # Add Java plugin and install
           asdf plugin list | grep -q "java" || asdf plugin add java
           asdf install java openjdk-21
           asdf global java openjdk-21
