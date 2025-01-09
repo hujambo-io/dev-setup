@@ -3,19 +3,17 @@
 # Exit on error
 set -e
 
-
 # Handle direct installation
 SCRIPT_SOURCE="https://github.com/hujambo-io/dev-setup.git"
-TEMP_DIR="/tmp/dev-setup"
+TEMP_DIR=""
 ORIGINAL_DIR=""
 
-if [[ "$0" == "/dev/stdin" ]]; then
+if [[ ! -f "ansible/playbook.yml" ]]; then
     echo "Direct installation detected. Cloning repository..."
     TEMP_DIR=$(mktemp -d)
     git clone "$SCRIPT_SOURCE" "$TEMP_DIR"
-    cd "$TEMP_DIR/dev-setup/dev-setup"
+    cd "$TEMP_DIR"
 fi
-
 
 # Script variables
 PLAYBOOK="ansible/playbook.yml"
@@ -23,7 +21,10 @@ INVENTORY="ansible/inventory.yml"
 VERBOSITY="-v"  # Default verbosity
 ACTION="install" # Default action
 ROLE=""         # No role by default
+TAG=""          # New: Variable for additional tag
 VALID_ROLES=("default" "frontend" "backend" "mobile" "full-stack" "QA")
+# New: Valid tags array
+VALID_TAGS=("bootstrap" "install" "uninstall" "setup" "finish" "always")
 
 # Function to display usage
 show_usage() {
@@ -39,6 +40,11 @@ show_usage() {
     echo "  --uninstall           Uninstall all tools"
     echo "  --uninstall --role ROLE   Uninstall tools for specific role"
     echo
+    # New: Added tag option to help
+    echo "Tag Options:"
+    echo "  --tag TAG         Specify tag for specific operations"
+    echo "                    Valid tags: ${VALID_TAGS[*]}"
+    echo
     echo "Other Options:"
     echo "  -v, -vv, -vvv  Increase verbosity level"
     echo "  --help         Display this help message"
@@ -50,12 +56,10 @@ show_usage() {
     echo "  $0 --role mobile -vv  # Install mobile tools with increased verbosity"
     echo "  $0 --uninstall        # Uninstall all tools"
     echo "  $0 --uninstall --role QA  # Uninstall only QA tools"
-
-    echo "# Install single app without role"
-    echo "ansible-playbook ansible/playbook.yml --tags install --extra-vars 'single_app=visual-studio-code'"
-    echo "# Uninstall single app without role"
-    echo "ansible-playbook ansible/playbook.yml --tags uninstall --extra-vars 'single_app=visual-studio-code'"
-
+    # New: Added tag examples
+    echo "  $0 --tag bootstrap    # Run bootstrap tasks"
+    echo "  $0 --tag setup        # Run setup tasks"
+    echo "  $0 --tag finish       # Run finish tasks"
 }
 
 # Function to validate role
@@ -68,6 +72,19 @@ validate_role() {
     done
     echo "Error: Invalid role '$role'"
     echo "Valid roles are: ${VALID_ROLES[*]}"
+    exit 1
+}
+
+# New: Function to validate tag
+validate_tag() {
+    local tag=$1
+    for valid_tag in "${VALID_TAGS[@]}"; do
+        if [[ "$tag" == "$valid_tag" ]]; then
+            return 0
+        fi
+    done
+    echo "Error: Invalid tag '$tag'"
+    echo "Valid tags are: ${VALID_TAGS[*]}"
     exit 1
 }
 
@@ -133,7 +150,7 @@ validate_playbook() {
     fi
 }
 
-# Parse command-line arguments
+# Modified argument parsing to include tag
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --uninstall)
@@ -143,6 +160,11 @@ while [[ $# -gt 0 ]]; do
         --role)
             ROLE="$2"
             validate_role "$ROLE"
+            shift 2
+            ;;
+        --tag)  # New: Tag option
+            TAG="$2"
+            validate_tag "$TAG"
             shift 2
             ;;
         -v|-vv|-vvv)
@@ -161,8 +183,8 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Check if role is specified for installation
-if [[ "$ACTION" == "install" && -z "$ROLE" ]]; then
+# Check if role is specified for installation (unchanged)
+if [[ "$ACTION" == "install" && -z "$ROLE" && -z "$TAG" ]]; then
     echo "Error: Role must be specified with --role for installation"
     show_usage
     exit 1
@@ -182,20 +204,21 @@ else
     echo "Warning: Inventory file not found at $INVENTORY"
 fi
 
-# Add role and tags based on action
+# Modified command construction to handle tags
 if [[ "$ACTION" == "uninstall" ]]; then
     if [[ -n "$ROLE" ]]; then
-        # Role-specific uninstall
         echo "Uninstalling tools for role: $ROLE"
         ANSIBLE_CMD="$ANSIBLE_CMD --extra-vars role=$ROLE --tags uninstall"
     else
-        # Complete uninstall
         echo "Uninstalling all tools"
         ANSIBLE_CMD="$ANSIBLE_CMD --tags uninstall"
     fi
 else
-    # Install always needs a role
-    ANSIBLE_CMD="$ANSIBLE_CMD --extra-vars role=$ROLE --tags 'always,install,setup'"
+    if [[ -n "$TAG" ]]; then
+        ANSIBLE_CMD="$ANSIBLE_CMD --tags $TAG"
+    elif [[ -n "$ROLE" ]]; then
+        ANSIBLE_CMD="$ANSIBLE_CMD --extra-vars role=$ROLE --tags 'always,install,setup'"
+    fi
 fi
 
 # Execute ansible-playbook
@@ -205,7 +228,7 @@ if ! eval "$ANSIBLE_CMD"; then
     exit 1
 fi
 
-# Add cleanup at the end
+# Cleanup
 if [[ -n "$TEMP_DIR" ]]; then
     echo "Cleaning up temporary files..."
     cd "$ORIGINAL_DIR"

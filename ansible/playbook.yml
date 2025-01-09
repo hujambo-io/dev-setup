@@ -190,8 +190,13 @@
       - name: flutter
         roles: ["mobile"]
         platforms:
-          type: universal
-        install_type: standard:flutter
+          type: platform-specific
+          Darwin:
+            install_type: shell:brew install --cask flutter
+          Linux:    
+            install_type: standard:flutter
+          Windows:
+            install_type: standard:flutter
 
       - name: cocoapods
         roles: ["mobile"]
@@ -398,7 +403,7 @@
         platforms:
           type: platform-specific
           Darwin:
-            install_type: standard:asdf
+            install_type: shell:brew install asdf && if ! grep -q "asdf.sh" ~/.zshrc; then echo '. $(brew --prefix asdf)/libexec/asdf.sh' >> ~/.zshrc; fi
           Linux:
             install_type: special:asdf_install
           Windows:
@@ -557,81 +562,58 @@
       tags:
         - uninstall
 
-
-    - name: Install asdf
+    # Keep this for Linux but simplify
+    - name: Install asdf on Linux
       ansible.builtin.shell:
         cmd: |
           if [ ! -d "$HOME/.asdf" ]; then
             git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.13.1
-            if [ "{{ ansible_facts['os_family'] }}" == "Darwin" ]; then
-              echo '. "$HOME/.asdf/asdf.sh"' >> ~/.zshrc
-              echo '. "$HOME/.asdf/completions/asdf.bash"' >> ~/.zshrc
-            else
-              echo '. "$HOME/.asdf/asdf.sh"' >> ~/.bashrc
-              echo '. "$HOME/.asdf/completions/asdf.bash"' >> ~/.bashrc
-            fi
+            echo '. "$HOME/.asdf/asdf.sh"' >> ~/.bashrc
+            echo '. "$HOME/.asdf/completions/asdf.bash"' >> ~/.bashrc
             echo "asdf installed successfully"
           else
             echo "asdf already installed"
           fi
       args:
         executable: /bin/bash
-      loop: "{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | selectattr('platforms.Linux.install_type', 'equalto', 'special:asdf_install') | list }}"
-      when:
-        - item.platforms['Linux'] is defined
-        - ansible_facts['os_family'] == 'Linux'
-      register: asdf_install_result
-      changed_when: "'installed successfully' in asdf_install_result.stdout"
-      tags:
-        - install
-
-    - name: Check asdf installation
-      ansible.builtin.stat:
-        path: "{{ ansible_env.HOME }}/.asdf"
-      register: asdf_installation
+      when: ansible_facts['os_family'] == 'Linux'
       tags: ['install']
 
-    - name: Check asdf plugins
+    # Add new macOS-specific task
+    - name: Configure asdf for Java on macOS
+      ansible.builtin.shell:
+        cmd: |
+          . $(brew --prefix asdf)/libexec/asdf.sh
+          # Add only Java plugin if not present
+          asdf plugin list | grep -q "java" || asdf plugin add java
+          # Install specific Java version
+          asdf install java openjdk-21
+          asdf global java openjdk-21
+      when: ansible_facts['os_family'] == 'Darwin'
+      tags: ['install']
+
+    # Keep but modify Linux Java setup
+    - name: Configure asdf for Java on Linux
       ansible.builtin.shell:
         cmd: |
           . "$HOME/.asdf/asdf.sh"
-          asdf plugin list | grep -q "." || {
-            asdf plugin add java
-            asdf plugin add nodejs
-            asdf plugin add python
-            asdf plugin add flutter
-          }
+          asdf plugin list | grep -q "java" || asdf plugin add java
+          asdf install java openjdk-21
+          asdf global java openjdk-21
       args:
         executable: /bin/bash
-      when: asdf_installation.stat.exists
-      tags: ['install']
-
-    - name: Install default versions (only if no versions exist)
-      ansible.builtin.shell:
-        cmd: |
-          . "$HOME/.asdf/asdf.sh"
-          asdf list | grep -q "." || {
-            asdf install java latest
-            asdf global java latest
-            asdf install nodejs latest
-            asdf global nodejs latest
-            asdf install python latest
-            asdf global python latest
-            asdf install flutter latest
-            asdf global flutter latest
-          }
-      args:
-        executable: /bin/bash
-      when: asdf_installation.stat.exists
+      when: ansible_facts['os_family'] == 'Linux'
       tags: ['install']
 
     - name: Uninstall asdf
       ansible.builtin.shell:
-        cmd: rm -rf ~/.asdf
-      loop: "{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | selectattr('platforms.Darwin.install_type', 'equalto', 'special:asdf_install') | list }}"
-      when:
-        - item.platforms[ansible_facts['os_family']] is defined
-        - ansible_facts['os_family'] in ['Darwin', 'Linux']
+        cmd: |
+          if [ "{{ ansible_facts['os_family'] }}" == "Darwin" ]; then
+            brew uninstall asdf
+          else
+            rm -rf ~/.asdf
+          fi
+      when: ansible_facts['os_family'] in ['Darwin', 'Linux']
       tags:
         - uninstall
 
@@ -812,13 +794,43 @@
 #      tags:
 #        - unintall 
 
+    # Bootstrap task (pre-installation)
+    - name: Bootstrap environment
+      ansible.builtin.shell:
+        cmd: |
+          if [ -d "/usr/local" ]; then
+            chown -R {{ ansible_user_id }}:admin /usr/local/*
+            chmod -R g+rwx /usr/local/*
+          fi
+          if [ -d "/opt/homebrew" ]; then
+            chown -R {{ ansible_user_id }}:admin /opt/homebrew/*
+            chmod -R g+rwx /opt/homebrew/*
+          fi
+      when: ansible_facts['os_family'] == 'Darwin'
+      become: true
+      tags: ['bootstrap']
 
+    # Finish task (post-installation)
+    - name: Finish setup
+      ansible.builtin.shell:
+        cmd: |
+          if [ -d "/usr/local" ]; then
+            chown -R {{ ansible_user_id }}:admin /usr/local/*
+            chmod -R g+rwx /usr/local/*
+          fi
+          if [ -d "/opt/homebrew" ]; then
+            chown -R {{ ansible_user_id }}:admin /opt/homebrew/*
+            chmod -R g+rwx /opt/homebrew/*
+          fi
+      when: ansible_facts['os_family'] == 'Darwin'
+      become: true
+      tags: ['finish']
 
     - name: Check if project structure exists
       ansible.builtin.stat:
         path: "~/Developer/01-ToSync/01-50-Projects/00-ProjectTemplate"
       register: project_template_dir
-      tags: ['install']
+      tags: ['setup']
 
     - name: Create base project directories
       ansible.builtin.file:
@@ -880,4 +892,4 @@
         - ~/Developer/09-NoSync/09-50-Projects/00-ProjectTemplate/07-Deliverables/05-TechnicalSpecs
         - ~/Developer/09-NoSync/09-50-Projects/00-ProjectTemplate/07-Deliverables/06-FinalReport
         - ~/Developer/09-NoSync/09-50-Projects/00-ProjectTemplate/07-Deliverables/07-Presentations
-      tags: ['install']
+      tags: ['setup']
