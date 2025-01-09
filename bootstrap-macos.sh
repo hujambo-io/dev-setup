@@ -24,7 +24,7 @@ ROLE=""         # No role by default
 TAG=""          # New: Variable for additional tag
 VALID_ROLES=("default" "frontend" "backend" "mobile" "full-stack" "QA")
 # New: Valid tags array
-VALID_TAGS=("bootstrap" "install" "uninstall" "setup" "finish" "always")
+VALID_TAGS=("bootstrap" "install" "uninstall" "setup" "finish" "always", "java-setup")
 
 # Function to display usage
 show_usage() {
