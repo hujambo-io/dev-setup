@@ -833,12 +833,12 @@
       ansible.builtin.shell:
         cmd: |
           if [ -d "/usr/local" ]; then
-            chown -R {{ ansible_user_id }}:admin /usr/local/*
-            chmod -R g+rwx /usr/local/*
+            sudo chown -R {{ ansible_user_id }}:admin /usr/local/*
+            sudo chmod -R g+rwx /usr/local/*
           fi
           if [ -d "/opt/homebrew" ]; then
-            chown -R {{ ansible_user_id }}:admin /opt/homebrew/*
-            chmod -R g+rwx /opt/homebrew/*
+            sudo chown -R {{ ansible_user_id }}:admin /opt/homebrew/*
+            sudo chmod -R g+rwx /opt/homebrew/*
           fi
       when: ansible_facts['os_family'] == 'Darwin'
       become: true
