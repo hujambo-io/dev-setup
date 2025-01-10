@@ -75,11 +75,11 @@
           type: universal
         install_type: standard:rstudio
 
-      - name: android-sdk
-        roles: ["mobile"]
-        platforms:
-          type: universal
-        install_type: standard:android-sdk
+#      - name: android-sdk
+#        roles: ["mobile"]
+#        platforms:
+#          type: universal
+#        install_type: standard:android-sdk
 
       - name: android-studio
         roles: ["mobile"]
