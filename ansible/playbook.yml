@@ -2,78 +2,91 @@
 - name: Setup Development Environment
   hosts: all
   vars:
+    admin_user: "{{ lookup('env', 'ADMIN_USER') }}"
     tools:
       - name: git
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:git
+        needs_admin: false    # Add this field
 
       - name: wget
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:wget
+        needs_admin: false    # Add this field
 
       - name: vim
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:vim
+        needs_admin: false    # Add this field
 
       - name: htop
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:htop
+        needs_admin: false    # Add this field
 
       - name: tree
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:tree
+        needs_admin: false    # Add this field
 
       - name: jq
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:jq
+        needs_admin: false    # Add this field
 
       - name: nvm
         roles: ["frontend"]
         platforms:
           type: universal
         install_type: standard:nvm
+        needs_admin: false    # Add this field
 
       - name: python
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:python
+        needs_admin: false    # Add this field
 
       - name: ffmpeg
         roles: ["full-stack"]
         platforms:
           type: universal
         install_type: standard:ffmpeg
+        needs_admin: false    # Add this field
 
       - name: ruby
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:ruby
+        needs_admin: false    # Add this field
 
       - name: r
         roles: ["full-stack"]
         platforms:
           type: universal
         install_type: standard:r
+        needs_admin: false    # Add this field
 
       - name: rstudio
         roles: ["full-stack"]
         platforms:
           type: universal
         install_type: standard:rstudio
+        needs_admin: true    # Add this field
 
 #      - name: android-sdk
 #        roles: ["mobile"]
@@ -86,54 +99,63 @@
         platforms:
           type: universal
         install_type: standard:android-studio
+        needs_admin: true    # Add this field
 
       - name: mongodb-compass
         roles: ["full-stack"]
         platforms:
           type: universal
         install_type: standard:mongodb-compass
+        needs_admin: true    # Add this field
 
       - name: slack
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:slack
+        needs_admin: true    # Add this field
 
       - name: zoom
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:zoom
+        needs_admin: true    # Add this field
 
       - name: postman
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:postman
+        needs_admin: true    # Add this field
 
       - name: k6
         roles: ["QA"]
         platforms:
           type: universal
         install_type: standard:k6
+        needs_admin: false    # Add this field
 
       - name: httpie
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:httpie
+        needs_admin: false    # Add this field
 
       - name: bruno
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:bruno
+        needs_admin: true    # Add this field
 
       - name: selenium-server
         roles: ["QA"]
         platforms:
           type: universal
         install_type: standard:selenium-server
+        needs_admin: false    # Add this field
 
       - name: firefox
         roles: ["default"]
@@ -145,30 +167,35 @@
             install_type: standard:firefox
           Windows:
             install_type: standard:firefox
+        needs_admin: true    # Add this field
 
       - name: curl
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:curl
+        needs_admin: false    # Add this field
 
       - name: zsh
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:zsh
+        needs_admin: false    # Add this field
 
       - name: tmux
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:tmux
+        needs_admin: false    # Add this field
 
       - name: telnet
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:telnet
+        needs_admin: false    # Add this field
 
       - name: docker
         roles: ["default"]
@@ -180,12 +207,14 @@
             install_type: shell:sudo apt-get install docker-ce docker-ce-cli containerd.io -y 
           Windows:  
             install_type: shell:choco install docker-desktop -y
+        needs_admin: true    # Add this field
 
       - name: miniconda
         roles: ["backend"]
         platforms:
           type: universal
         install_type: standard:miniconda
+        needs_admin: false    # Add this field
 
       - name: flutter
         roles: ["mobile"]
@@ -197,6 +226,7 @@
             install_type: standard:flutter
           Windows:
             install_type: standard:flutter
+        needs_admin: false    # Add this field
 
       - name: cocoapods
         roles: ["mobile"]
@@ -205,18 +235,21 @@
           Darwin:
             install_type: standard:cocoapods
             # shell:brew install brew-gem && && brew link --force brew-gem && gem install cocoapods
+        needs_admin: false    # Add this field
 
       - name: android-platform-tools
         roles: ["mobile"]
         platforms:
           type: universal
         install_type: standard:android-platform-tools
+        needs_admin: false    # Add this field
 
       - name: fastlane
         roles: ["mobile"]
         platforms:
           type: universal
         install_type: standard:fastlane
+        needs_admin: false    # Add this field
 
       - name: google-chrome
         roles: ["default"]
@@ -228,6 +261,7 @@
             install_type: standard:google-chrome-stable
           Windows:
             install_type: standard:googlechrome
+        needs_admin: true    # Add this field
 
       - name: microsoft-edge
         roles: ["default"]
@@ -239,18 +273,21 @@
             install_type: standard:microsoft-edge-stable
           Windows:
             install_type: standard:microsoft-edge
+        needs_admin: true    # Add this field
 
       - name: visual-studio-code
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:visual-studio-code
+        needs_admin: true    # Add this field
 
       - name: intellij-idea-ce
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:intellij-idea-ce
+        needs_admin: true    # Add this field
 
       - name: netbeans
         roles: ["full-stack"]
@@ -262,12 +299,14 @@
             install_type: standard:netbeans-linux-deb-package
           Windows:
             install_type: standard:netbeans
+        needs_admin: true    # Add this field
 
       - name: eclipse-java
         roles: ["full-stack"]
         platforms:
           type: universal
         install_type: standard:eclipse-java
+        needs_admin: true    # Add this field
 
       - name: papyrus
         roles: ["full-stack"]
@@ -279,12 +318,14 @@
             install_type: standard:papyrus-linux-deb-package
           Windows:
             install_type: standard:papyrus
+        needs_admin: true    # Add this field
 
       - name: font-fira-code
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:font-fira-code
+        needs_admin: false    # Add this field
 
       - name: syncthing
         roles: ["default"]
@@ -296,12 +337,14 @@
             install_type: standard:syncthing
           Windows:
             install_type: standard:syncthing
+        needs_admin: true    # Add this field
 
       - name: cypher-shell
         roles: ["full-stack"]
         platforms:
           type: universal
         install_type: standard:cypher-shell
+        needs_admin: false    # Add this field
 
       - name: protobuf-compiler
         roles: ["default"]
@@ -313,6 +356,7 @@
             install_type: standard:protobuf-compiler
           Windows:
             install_type: shell:choco install protoc -y
+        needs_admin: false    # Add this field
 
       - name: build-essential
         roles: ["default"]
@@ -324,6 +368,7 @@
             install_type: standard:build-essential
           Windows:
             install_type: standard:build-tools
+        needs_admin: false    # Add this field
 
       - name: apt-transport-https
         roles: ["default"]
@@ -331,6 +376,7 @@
           type: platform-specific
           Linux:
             install_type: standard:apt-transport-https
+        needs_admin: false    # Add this field
 
       - name: ca-certificates
         roles: ["default"]
@@ -338,6 +384,7 @@
           type: platform-specific
           Linux:
             install_type: standard:ca-certificates
+        needs_admin: false    # Add this field
 
       - name: gnupg
         roles: ["default"]
@@ -345,6 +392,7 @@
           type: platform-specific
           Linux:
             install_type: standard:gnupg
+        needs_admin: false    # Add this field
 
       - name: lsb-release
         roles: ["default"]
@@ -352,12 +400,14 @@
           type: platform-specific
           Linux:
             install_type: standard:lsb-release
+        needs_admin: false    # Add this field
 
       - name: oh-my-posh
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:on-my-posh
+        needs_admin: false    # Add this field
 
       - name: oh-my-zsh
         roles: ["default"]
@@ -367,12 +417,14 @@
             install_type: shell:sh -c '[ ! -d "$HOME/.oh-my-zsh" ] && curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh | sh || echo "oh-my-zsh already installed"'
           Linux:    
             install_type: shell:sh -c '[ ! -d "$HOME/.oh-my-zsh" ] && curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh | sh || echo "oh-my-zsh already installed"'
+        needs_admin: false    # Add this field
             
       - name: neo4j
         roles: ["full-stack"]
         platforms:
           type: universal
         install_type: standard:neo4j
+        needs_admin: false    # Add this field
 
 #      - name: neo4j-desktop
 #        roles: ["full-stack"]
@@ -390,6 +442,7 @@
         platforms:
           type: universal
         install_type: standard:zip
+        needs_admin: false    # Add this field
 
 #      - name: sdkman
 #        roles: ["default"]
@@ -408,6 +461,7 @@
             install_type: special:asdf_install
           Windows:
             install_type: special:asdf_install
+        needs_admin: false    # Add this field
 
       - name: iterm2
         roles: ["default"]
@@ -415,49 +469,57 @@
           type: platform-specific
           Darwin:
             install_type: standard:iterm2
+        needs_admin: true    # Add this field
 
       - name: yq
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:yq
+        needs_admin: false    # Add this field
 
       - name: fd
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:fd
+        needs_admin: false    # Add this field
 
       - name: azure-cli
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:azure-cli
+        needs_admin: false    # Add this field
 
       - name: google-cloud-sdk
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:google-cloud-sdk
+        needs_admin: false    # Add this field
 
       - name: awscli
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:awscli
+        needs_admin: false    # Add this field
 
       - name: notion
         roles: ["default"]
         platforms:
           type: univeral 
         install_type: standard:notion
+        needs_admin: true    # Add this field
       
       - name: notion-calendar
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:notion-calendar
-      
+        needs_admin: true    # Add this field
+     
 #      - name: nomachine
 #        roles: ["default"]
 #        platforms:
@@ -469,6 +531,7 @@
         platforms:
           type: universal
         install_type: standard:raycast
+        needs_admin: true    # Add this field
 
       - name: uv
         roles: ["default"]
@@ -476,6 +539,7 @@
           type: platform-specific
           Darwin:
             install_type: standard:uv
+        needs_admin: false    # Add this field
 
       - name: taplo
         roles: ["default"]
@@ -483,20 +547,9 @@
           type: platform-specific
           Darwin:
             install_type: standard:taplo
+        needs_admin: false    # Add this field
 
   tasks:
-
-    # Debug and information tasks - only these should be 'always'
-#    - name: Debug tools variable
-#      ansible.builtin.debug:
-#        msg: "{{ tools }}"
-#      tags: ['always']
-
-#    - name: Debug each tool in tools
-#      ansible.builtin.debug:
-#        msg: "Tool: {{ item }}"
-#      loop: "{{ tools }}"
-#      tags: ['always']
 
     # Include Windows tasks only if we're on Windows
     - name: Include Windows tasks
@@ -512,58 +565,18 @@
         else
           echo "Xcode Command Line Tools are already installed."
         fi
+      become: true  # Always needs admin
+      become_user: "{{ admin_user }}"
       args:
         executable: /bin/bash
-      when: 
-        - item.platforms['Darwin'] is defined
-        - item.platforms['Darwin']['install_type'] == "special:xcode_install"
-      loop: "{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | list }}"
+      when: ansible_facts['os_family'] == 'Darwin'
       tags:
-        - setup
+        - xcode-setup
 
-    - name: Debug sdkman details
-      ansible.builtin.debug:
-        msg: |
-          Item: {{ item | to_yaml }}
-          Install type: {{ item.platforms['Darwin']['install_type'] }}
-      loop: "{{ tools | selectattr('name', 'equalto', 'sdkman') | list }}"
-      tags: ['install']
-
-    - name: Install sdkman
-      ansible.builtin.shell:
-        cmd: |
-          if [ ! -d "$HOME/.sdkman" ]; then
-            curl -s "https://get.sdkman.io" | bash && \
-            echo 'export SDKMAN_DIR="$HOME/.sdkman"' >> ~/.zshrc && \
-            echo '[[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"' >> ~/.zshrc
-            echo "sdkman installed successfully"
-          else
-            echo "sdkman is already installed"
-          fi
-      args:
-        executable: /bin/zsh
-      loop: "{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | selectattr('platforms.Darwin.install_type', 'equalto', 'special:sdkman_install') | list }}"
-      when:
-        - item.platforms['Darwin'] is defined
-        - ansible_facts['os_family'] == 'Darwin'
-      register: sdkman_install_result
-      changed_when: "'installed successfully' in sdkman_install_result.stdout"
-      tags:
-        - install
-
-    # Uninstall sdkman
-    - name: Uninstall sdkman
-      ansible.builtin.shell:
-        cmd: rm -rf ~/.sdkman
-      loop: "{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | selectattr('platforms.Darwin.install_type', 'equalto', 'special:sdkman_install') | list }}"
-      when:
-        - item.platforms.Darwin is defined
-        - ansible_facts['os_family'] == 'Darwin'
-      tags:
-        - uninstall
-
-    # Keep this for Linux but simplify
+        # Keep this for Linux but simplify
     - name: Install asdf on Linux
+      become: "{{ item.needs_admin | default(false) }}"
+      become_user: "{{ admin_user if item.needs_admin else omit }}"
       ansible.builtin.shell:
         cmd: |
           if [ ! -d "$HOME/.asdf" ]; then
@@ -581,6 +594,8 @@
 
     # Add new macOS-specific task
     - name: Configure asdf for Java on macOS
+      become: "{{ item.needs_admin | default(false) }}"
+      become_user: "{{ admin_user if item.needs_admin else omit }}"
       ansible.builtin.shell:
         cmd: |
           # Install asdf first if not present
@@ -602,6 +617,8 @@
 
     # Keep but modify Linux Java setup
     - name: Configure asdf for Java on Linux
+      become: "{{ item.needs_admin | default(false) }}"
+      become_user: "{{ admin_user if item.needs_admin else omit }}"
       ansible.builtin.shell:
         cmd: |
           # Install asdf first if not present
@@ -624,6 +641,8 @@
       tags: ['java-setup']
 
     - name: Uninstall asdf
+      become: "{{ item.needs_admin | default(false) }}"
+      become_user: "{{ admin_user if item.needs_admin else omit }}"
       ansible.builtin.shell:
         cmd: |
           if [ "{{ ansible_facts['os_family'] }}" == "Darwin" ]; then
@@ -637,6 +656,8 @@
 
     # Universal tools installation
     - name: Install universal tools on Linux
+      become: "{{ item.needs_admin | default(false) }}"
+      become_user: "{{ admin_user if item.needs_admin else omit }}"
       ansible.builtin.package:
         name: "{{ item.name }}"
         state: present
@@ -645,6 +666,8 @@
       tags: ['install']
       
     - name: Install universal tools on macOS
+      become: "{{ item.needs_admin | default(false) }}"
+      become_user: "{{ admin_user if item.needs_admin else omit }}"
       community.general.homebrew:
         name: "{{ item.name }}"
         state: present
@@ -654,6 +677,8 @@
         
     # Install platform-specific tools
     - name: Install platform-specific tools with package manager
+      become: "{{ item.needs_admin | default(false) }}"
+      become_user: "{{ admin_user if item.needs_admin else omit }}"
       ansible.builtin.package:
         name: "{{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}"
         state: present
@@ -666,6 +691,8 @@
       tags: ['install']
 
     - name: Install platform-specific tools with homebrew
+      become: "{{ item.needs_admin | default(false) }}"
+      become_user: "{{ admin_user if item.needs_admin else omit }}"
       community.general.homebrew:
         name: "{{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}"
         state: present
@@ -678,6 +705,8 @@
       tags: ['install']
 
     - name: Install platform-specific tools with shell commands
+      become: "{{ item.needs_admin | default(false) }}"
+      become_user: "{{ admin_user if item.needs_admin else omit }}"
       ansible.builtin.shell:
         cmd: "{{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}"
       loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | list }}{% endif %}"
@@ -688,6 +717,8 @@
       tags: ['install']
 
     - name: Debug platform-specific single app
+      become: "{{ item.needs_admin | default(false) }}"
+      become_user: "{{ admin_user if item.needs_admin else omit }}"
       ansible.builtin.debug:
         msg: >
           Platform: {{ ansible_facts['os_family'] }}
@@ -697,15 +728,10 @@
       when: single_app is defined
       tags: ['install']
 
-#    - name: Debug current item
-#      ansible.builtin.debug:
-#        msg: "Current item: {{ item }}"
-#      loop: "{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | list }}"
-#      tags:
-#        - install
-
     # Uninstall tasks for Linux/macOS
     - name: Uninstall universal tools on Linux
+      become: "{{ item.needs_admin | default(false) }}"
+      become_user: "{{ admin_user if item.needs_admin else omit }}"
       ansible.builtin.package:
         name: "{{ item.name }}"
         state: absent
@@ -715,6 +741,8 @@
       tags: ['uninstall']
 
     - name: Uninstall universal tools on macOS
+      become: "{{ item.needs_admin | default(false) }}"
+      become_user: "{{ admin_user if item.needs_admin else omit }}"
       community.general.homebrew:
         name: "{{ item.name }}"
         state: absent
@@ -725,6 +753,8 @@
 
     # Uninstall platform-specific tools
     - name: Uninstall platform-specific tools with package manager
+      become: "{{ item.needs_admin | default(false) }}"
+      become_user: "{{ admin_user if item.needs_admin else omit }}"
       ansible.builtin.package:
         name: "{{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}"
         state: absent
@@ -737,6 +767,8 @@
       tags: ['uninstall']
 
     - name: Uninstall platform-specific tools with homebrew
+      become: "{{ item.needs_admin | default(false) }}"
+      become_user: "{{ admin_user if item.needs_admin else omit }}"
       community.general.homebrew:
         name: "{{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}"
         state: absent
@@ -751,6 +783,8 @@
 
     # Uninstall role-based universal tools
     - name: Uninstall role-based universal tools on Linux
+      become: "{{ item.needs_admin | default(false) }}"
+      become_user: "{{ admin_user if item.needs_admin else omit }}"
       ansible.builtin.package:
         name: "{{ item.name }}"
         state: absent
@@ -761,6 +795,8 @@
 
 
     - name: Uninstall role-based universal tools on macOS
+      become: "{{ item.needs_admin | default(false) }}"
+      become_user: "{{ admin_user if item.needs_admin else omit }}"
       community.general.homebrew:
         name: "{{ item.name }}"
         state: absent
@@ -771,6 +807,8 @@
 
     # Role-based uninstall
     - name: Uninstall role-based platform-specific tools with package manager
+      become: "{{ item.needs_admin | default(false) }}"
+      become_user: "{{ admin_user if item.needs_admin else omit }}"
       ansible.builtin.package:
         name: "{{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}"
         state: absent
@@ -783,6 +821,8 @@
       tags: ['uninstall']
 
     - name: Uninstall role-based platform-specific tools with homebrew
+      become: "{{ item.needs_admin | default(false) }}"
+      become_user: "{{ admin_user if item.needs_admin else omit }}"
       community.general.homebrew:
         name: "{{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}"
         state: absent
@@ -794,26 +834,11 @@
       ignore_errors: true
       tags: ['uninstall']
 
-#    - name: Log unsupported tools
-#      ansible.builtin.debug:
-#        msg: "Tool {{ item.name }} has no valid install_type for {{ ansible_facts['os_family'] }}. Skipping..."
-#      loop: "{{ tools | selectattr('platforms.type', 'equalto', 'universal') | list }}"
-#      when: 
-#        - item.platforms is defined
-#        - item.platforms[ansible_facts['os_family']] is defined
-#        - item.platforms[ansible_facts['os_family']]['install_type'] is not defined
-#      tags:
-#        - always
-
-    # Debug uninstallation results
-#    - name: Debug uninstallation results
-#      ansible.builtin.debug:
-#        var: uninstall_results
-#      tags:
-#        - unintall 
 
     # Bootstrap task (pre-installation)
     - name: Bootstrap environment
+      become: "{{ item.needs_admin | default(false) }}"
+      become_user: "{{ admin_user if item.needs_admin else omit }}"
       ansible.builtin.shell:
         cmd: |
           if [ -d "/usr/local" ]; then
@@ -830,6 +855,8 @@
 
     # Finish task (post-installation)
     - name: Finish setup
+      become: "{{ item.needs_admin | default(false) }}"
+      become_user: "{{ admin_user if item.needs_admin else omit }}"
       ansible.builtin.shell:
         cmd: |
           if [ -d "/usr/local" ]; then
@@ -842,7 +869,6 @@
           fi
         executable: /bin/bash  # Add this line
       when: ansible_facts['os_family'] == 'Darwin'
-      become: true
       tags: ['finish']
 
     - name: Check if project structure exists
