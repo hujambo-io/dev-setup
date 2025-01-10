@@ -80,7 +80,7 @@ The setup tool now supports tag-based operations for finer control:
 ./bootstrap-macos.sh --tag setup
 
 # Post-installation cleanup
-./bootstrap-macos.sh --tag finish
+./bootstrap-macos.sh --tag finish 
 ```
 
 Replace `bootstrap-macos.sh` with `bootstrap-linux.sh` or `bootstrap-windows.ps1` as needed.

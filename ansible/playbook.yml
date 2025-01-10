@@ -843,8 +843,6 @@
         executable: /bin/bash  # Add this line
       when: ansible_facts['os_family'] == 'Darwin'
       become: true
-      become_method: sudo
-      become_ask_pass: true
       tags: ['finish']
 
     - name: Check if project structure exists

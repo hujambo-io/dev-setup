@@ -217,6 +217,13 @@ if [[ "$ACTION" == "uninstall" ]]; then
 else
     if [[ -n "$TAG" ]]; then
         ANSIBLE_CMD="$ANSIBLE_CMD --tags $TAG"
+
+        # Add --ask-become-pass for finish tag
+        if [[ "$TAG" == "finish" ]]; then
+            ANSIBLE_CMD="$ANSIBLE_CMD --ask-become-pass"
+        fi
+
+
     elif [[ -n "$ROLE" ]]; then
         ANSIBLE_CMD="$ANSIBLE_CMD --extra-vars role=$ROLE --tags 'always,install,setup'"
     fi
