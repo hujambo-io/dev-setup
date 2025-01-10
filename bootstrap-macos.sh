@@ -225,7 +225,7 @@ else
 
 
     elif [[ -n "$ROLE" ]]; then
-        ANSIBLE_CMD="$ANSIBLE_CMD --extra-vars role=$ROLE --tags 'always,install,setup'"
+        ANSIBLE_CMD="$ANSIBLE_CMD --extra-vars role=$ROLE --tags 'always,install,setup' --ask-become-pass"
     fi
 fi
 
