@@ -79,7 +79,7 @@
         platforms:
           type: universal
         install_type: standard:r
-        needs_admin: false    # Add this field
+        needs_admin: true    # Add this field
 
       - name: rstudio
         roles: ["full-stack"]
