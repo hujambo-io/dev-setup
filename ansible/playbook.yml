@@ -101,6 +101,19 @@
         install_type: standard:android-studio
         needs_admin: true    # Add this field
 
+      - name: springboot
+        roles: ["backend"]
+        platforms:
+          type: platform-specific
+          Darwin:
+            install_type: shell:brew install --cask springtoolsuite
+          Linux:
+            install_type: standard:springboot
+          Windows:
+            install_type: standard:springboot
+        needs_admin: true    # Add this field
+
+
       - name: mongodb-compass
         roles: ["full-stack"]
         platforms:
@@ -674,14 +687,26 @@
       tags: ['install']
 
     - name: Install universal tools on macOS (privileged)
+      become: true
+      become_user: "{{ admin_user }}"
       community.general.homebrew:
         name: "{{ item.name }}"
         state: present
-      become: true
-      become_user: "{{ admin_user }}"
-      loop: "{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('needs_admin', 'equalto', true) | list }}"
+      loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('name', 'equalto', single_app) | selectattr('needs_admin', 'equalto', true) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | selectattr('needs_admin', 'equalto', true) | list }}{% endif %}"
       when: ansible_facts['os_family'] == 'Darwin'
       tags: ['install']
+      async: 300  # 5 minute timeout
+      poll: 15    # Check every 15 seconds
+      register: async_results
+
+    - name: Check async task results
+      async_status:
+        jid: "{{ async_results.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      retries: 30
+      delay: 10
+      when: async_results is defined
         
     # Install platform-specific tools
     - name: Install platform-specific tools with package manager
