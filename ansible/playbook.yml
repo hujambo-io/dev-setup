@@ -665,13 +665,21 @@
       when: ansible_facts['os_family'] == 'Linux'
       tags: ['install']
       
-    - name: Install universal tools on macOS
-      become: "{{ item.needs_admin | default(false) }}"
-      become_user: "{{ admin_user if item.needs_admin else omit }}"
+    - name: Install universal tools on macOS (non-privileged)
       community.general.homebrew:
         name: "{{ item.name }}"
         state: present
-      loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | list }}{% endif %}"
+      loop: "{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('needs_admin', 'equalto', false) | list }}"
+      when: ansible_facts['os_family'] == 'Darwin'
+      tags: ['install']
+
+    - name: Install universal tools on macOS (privileged)
+      community.general.homebrew:
+        name: "{{ item.name }}"
+        state: present
+      become: true
+      become_user: "{{ admin_user }}"
+      loop: "{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('needs_admin', 'equalto', true) | list }}"
       when: ansible_facts['os_family'] == 'Darwin'
       tags: ['install']
         
@@ -850,7 +858,6 @@
             chmod -R g+rwx /opt/homebrew/*
           fi
       when: ansible_facts['os_family'] == 'Darwin'
-      become: true
       tags: ['bootstrap']
 
     # Finish task (post-installation)
