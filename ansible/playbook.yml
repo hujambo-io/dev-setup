@@ -686,28 +686,22 @@
       when: ansible_facts['os_family'] == 'Darwin'
       tags: ['install']
 
-    - name: Install universal tools on macOS (privileged)
+    - name: Install privileged universal tools on macOS
       become: true
       become_user: "{{ admin_user }}"
       community.general.homebrew:
         name: "{{ item.name }}"
         state: present
-      loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('name', 'equalto', single_app) | selectattr('needs_admin', 'equalto', true) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | selectattr('needs_admin', 'equalto', true) | list }}{% endif %}"
-      when: ansible_facts['os_family'] == 'Darwin'
+      when: 
+        - ansible_facts['os_family'] == 'Darwin'
+        - item.needs_admin | default(false)
+      register: install_result
+      until: install_result is succeeded
+      retries: 3
+      delay: 5
+      with_items: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | list }}{% endif %}"
       tags: ['install']
-      async: 300  # 5 minute timeout
-      poll: 15    # Check every 15 seconds
-      register: async_results
 
-    - name: Check async task results
-      async_status:
-        jid: "{{ async_results.ansible_job_id }}"
-      register: job_result
-      until: job_result.finished
-      retries: 30
-      delay: 10
-      when: async_results is defined
-        
     # Install platform-specific tools
     - name: Install platform-specific tools with package manager
       become: "{{ item.needs_admin | default(false) }}"
