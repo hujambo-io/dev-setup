@@ -458,11 +458,11 @@
           type: universal
         install_type: standard:notion-calendar
       
-      - name: nomachine
-        roles: ["default"]
-        platforms:
-          type: universal
-        install_type: standard:nomachine
+#      - name: nomachine
+#        roles: ["default"]
+#        platforms:
+#          type: universal
+#        install_type: standard:nomachine
 
       - name: raycast
         roles: ["default"]
