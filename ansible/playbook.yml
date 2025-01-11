@@ -338,7 +338,7 @@
         platforms:
           type: universal
         install_type: standard:font-fira-code
-        needs_admin: false    # Add this field
+        needs_admin: true    # Add this field
 
       - name: syncthing
         roles: ["default"]
