@@ -606,27 +606,28 @@
         - ansible_user_shell == '/bin/zsh'
       tags: ['install']
 
-    # Add new macOS-specific task
     - name: Install and configure asdf plugins
       ansible.builtin.shell:
         cmd: |
           . $(brew --prefix asdf)/libexec/asdf.sh
           
-          # Define plugins and versions
-          declare -A versions=(
-            ["java"]="openjdk-21"
-            ["flutter"]="latest"
-          )
-          
-          # Install and configure each plugin
-          for plugin in "${!versions[@]}"; do
+          # Install plugins one by one
+          for plugin in java flutter; do
+            version=""
+            case $plugin in
+              "java") version="openjdk-21" ;;
+              "flutter") version="latest" ;;
+            esac
+            
+            # Install plugin if not present
             asdf plugin list | grep -q "$plugin" || asdf plugin add "$plugin"
-            asdf install "$plugin" "${versions[$plugin]}"
-            asdf global "$plugin" "${versions[$plugin]}"
+            asdf install "$plugin" "$version"
+            asdf global "$plugin" "$version"
           done
+        executable: /bin/bash  # Explicitly use bash
       when: ansible_facts['os_family'] == 'Darwin'
       tags: ['install']
-      
+
     # Keep but modify Linux Java setup
     - name: Configure asdf for Java on Linux
       become: "{{ item.needs_admin | default(false) }}"
