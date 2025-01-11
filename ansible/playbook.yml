@@ -106,7 +106,7 @@
         platforms:
           type: platform-specific
           Darwin:
-            install_type: shell:brew install --cask springtoolsuite
+            install_type: standard:springtoolsuite
           Linux:
             install_type: standard:springboot
           Windows:
@@ -215,7 +215,7 @@
         platforms:
           type: platform-specific
           Darwin:
-            install_type: shell:if [ ! -d "/Applications/Docker.app" ]; then brew install --cask docker; else if ! brew list --cask docker >/dev/null 2>&1; then brew install --cask docker --force; fi; fi
+            install_type: standard:docker
           Linux:  
             install_type: shell:sudo apt-get install docker-ce docker-ce-cli containerd.io -y 
           Windows:  
@@ -233,8 +233,6 @@
         roles: ["mobile"]
         platforms:
           type: platform-specific
-          Darwin:
-            install_type: shell:brew install --cask flutter
           Linux:    
             install_type: standard:flutter
           Windows:
@@ -364,7 +362,7 @@
         platforms:
           type: platform-specific
           Darwin:
-            install_type: shell:brew install protobuf
+            install_type: standard:protobuf
           Linux:
             install_type: standard:protobuf-compiler
           Windows:
@@ -426,8 +424,6 @@
         roles: ["default"]
         platforms:
           type: platform-specific
-          Darwin:
-            install_type: shell:sh -c '[ ! -d "$HOME/.oh-my-zsh" ] && curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh | sh || echo "oh-my-zsh already installed"'
           Linux:    
             install_type: shell:sh -c '[ ! -d "$HOME/.oh-my-zsh" ] && curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh | sh || echo "oh-my-zsh already installed"'
         needs_admin: false    # Add this field
@@ -457,24 +453,17 @@
         install_type: standard:zip
         needs_admin: false    # Add this field
 
-#      - name: sdkman
-#        roles: ["default"]
-#        platforms:
-#          type: platform-specific
-#          Windows:
-#            install_type: special:sdkman_install_windows
-
       - name: asdf
         roles: ["default"]
         platforms:
           type: platform-specific
           Darwin:
-            install_type: shell:brew install asdf && if ! grep -q "asdf.sh" ~/.zshrc; then echo '. $(brew --prefix asdf)/libexec/asdf.sh' >> ~/.zshrc; fi
+            install_type: standard:asdf
           Linux:
             install_type: special:asdf_install
           Windows:
             install_type: special:asdf_install
-        needs_admin: false    # Add this field
+        needs_admin: false
 
       - name: iterm2
         roles: ["default"]
@@ -605,29 +594,39 @@
       when: ansible_facts['os_family'] == 'Linux'
       tags: ['install']
 
+    - name: Configure asdf shell integration
+      ansible.builtin.blockinfile:
+        path: "{{ lookup('env', 'HOME') }}/.zshrc"
+        block: |
+          . $(brew --prefix asdf)/libexec/asdf.sh
+        marker: "# {mark} ASDF INTEGRATION"
+        create: yes
+      when: 
+        - ansible_facts['os_family'] == 'Darwin'
+        - ansible_user_shell == '/bin/zsh'
+      tags: ['install']
+
     # Add new macOS-specific task
-    - name: Configure asdf for Java on macOS
-      become: "{{ item.needs_admin | default(false) }}"
-      become_user: "{{ admin_user if item.needs_admin else omit }}"
+    - name: Install and configure asdf plugins
       ansible.builtin.shell:
         cmd: |
-          # Install asdf first if not present
-          if ! command -v asdf &> /dev/null; then
-            brew install asdf
-            echo '. $(brew --prefix asdf)/libexec/asdf.sh' >> ~/.zshrc
-            source ~/.zshrc
-          fi
-          
-          # Source asdf
           . $(brew --prefix asdf)/libexec/asdf.sh
           
-          # Add Java plugin and install
-          asdf plugin list | grep -q "java" || asdf plugin add java
-          asdf install java openjdk-21
-          asdf global java openjdk-21
+          # Define plugins and versions
+          declare -A versions=(
+            ["java"]="openjdk-21"
+            ["flutter"]="latest"
+          )
+          
+          # Install and configure each plugin
+          for plugin in "${!versions[@]}"; do
+            asdf plugin list | grep -q "$plugin" || asdf plugin add "$plugin"
+            asdf install "$plugin" "${versions[$plugin]}"
+            asdf global "$plugin" "${versions[$plugin]}"
+          done
       when: ansible_facts['os_family'] == 'Darwin'
-      tags: ['java-setup']
-
+      tags: ['install']
+      
     # Keep but modify Linux Java setup
     - name: Configure asdf for Java on Linux
       become: "{{ item.needs_admin | default(false) }}"
