@@ -215,7 +215,7 @@
         platforms:
           type: platform-specific
           Darwin:
-            install_type: shell:brew list --cask docker || brew install --cask docker
+            install_type: shell:if [ ! -d "/Applications/Docker.app" ]; then brew install --cask docker; else if ! brew list --cask docker >/dev/null 2>&1; then brew install --cask docker --force; fi; fi
           Linux:  
             install_type: shell:sudo apt-get install docker-ce docker-ce-cli containerd.io -y 
           Windows:  
