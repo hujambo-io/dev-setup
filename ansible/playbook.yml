@@ -677,7 +677,7 @@
       loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | list }}{% endif %}"
       when: ansible_facts['os_family'] == 'Linux'
       tags: ['install']
-      
+
     - name: Install universal tools on macOS (non-privileged)
       community.general.homebrew:
         name: "{{ item.name }}"
@@ -686,20 +686,14 @@
       when: ansible_facts['os_family'] == 'Darwin'
       tags: ['install']
 
-    # New privileged installations approach
-    - name: Get privileged apps list
-      set_fact:
-        privileged_apps: "{{ tools | selectattr('needs_admin', 'defined') | selectattr('needs_admin') | map(attribute='name') | list }}"
-
-    - name: Install privileged apps
+    - name: Install universal tools on macOS (privileged)
+      community.general.homebrew:
+        name: "{{ item.name }}"
+        state: present
       become: true
       become_user: "{{ admin_user }}"
-      community.general.homebrew:
-        name: "{{ privileged_apps }}"
-        state: present
-      when: 
-        - ansible_facts['os_family'] == 'Darwin'
-        - privileged_apps | length > 0
+      loop: "{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('needs_admin', 'equalto', true) | list }}"
+      when: ansible_facts['os_family'] == 'Darwin'
       tags: ['install']
       
     # Install platform-specific tools
