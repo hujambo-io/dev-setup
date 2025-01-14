@@ -604,7 +604,7 @@
       when: 
         - ansible_facts['os_family'] == 'Darwin'
         - ansible_user_shell == '/bin/zsh'
-      tags: ['install']
+      tags: ['java-setup']
 
     - name: Install and configure asdf plugins
       ansible.builtin.shell:
@@ -626,7 +626,7 @@
           done
         executable: /bin/bash  # Explicitly use bash
       when: ansible_facts['os_family'] == 'Darwin'
-      tags: ['install']
+      tags: ['java-setup']
 
     # Keep but modify Linux Java setup
     - name: Configure asdf for Java on Linux
