@@ -460,7 +460,7 @@
           Darwin:
             install_type: standard:asdf
           Linux:
-            install_type: special:asdf_install
+            install_type: standard:asdf
           Windows:
             install_type: special:asdf_install
         needs_admin: false
@@ -521,12 +521,30 @@
           type: universal
         install_type: standard:notion-calendar
         needs_admin: true    # Add this field
-     
-#      - name: nomachine
-#        roles: ["default"]
-#        platforms:
-#          type: universal
-#        install_type: standard:nomachine
+
+      - name: gradle
+        roles: ["backend"]
+        platforms:
+          type: platform-specific
+          Darwin:
+            install_type: standard:gradle
+          Linux:
+            install_type: standard:gradle
+          Windows:
+            install_type: standard:gradle
+        needs_admin: false
+
+      - name: maven
+        roles: ["backend"]
+        platforms:
+          type: platform-specific
+          Darwin:
+            install_type: standard:maven
+          Linux:
+            install_type: standard:maven
+          Windows:
+            install_type: standard:maven
+        needs_admin: false
 
       - name: raycast
         roles: ["default"]
@@ -576,23 +594,25 @@
         - xcode-setup
 
         # Keep this for Linux but simplify
-    - name: Install asdf on Linux
-      become: "{{ item.needs_admin | default(false) }}"
-      become_user: "{{ admin_user if item.needs_admin else omit }}"
+    - name: Configure asdf for Java on Linux
       ansible.builtin.shell:
         cmd: |
-          if [ ! -d "$HOME/.asdf" ]; then
-            git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.13.1
-            echo '. "$HOME/.asdf/asdf.sh"' >> ~/.bashrc
-            echo '. "$HOME/.asdf/completions/asdf.bash"' >> ~/.bashrc
-            echo "asdf installed successfully"
-          else
-            echo "asdf already installed"
+          # Make sure asdf is available
+          if ! command -v asdf &> /dev/null; then
+            source ~/.bashrc  # Try to load asdf if just installed
           fi
+
+          # Source asdf
+          . $HOME/.asdf/asdf.sh
+          
+          # Add Java plugin and install
+          asdf plugin list | grep -q "java" || asdf plugin add java
+          asdf install java openjdk-21
+          asdf global java openjdk-21
       args:
         executable: /bin/bash
       when: ansible_facts['os_family'] == 'Linux'
-      tags: ['install']
+      tags: ['java-setup']
 
     - name: Configure asdf shell integration
       ansible.builtin.blockinfile:
