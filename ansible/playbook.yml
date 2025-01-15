@@ -115,12 +115,19 @@
 
 
       - name: mongodb-compass
-        roles: ["full-stack"]
+        roles: ["backend"]
         platforms:
           type: universal
         install_type: standard:mongodb-compass
         needs_admin: true    # Add this field
 
+      - name: mongosh
+        roles: ["backend"]
+        platforms:
+          type: universal
+        install_type: standard:mongodb-compass
+        needs_admin: true    # Add this field
+        
       - name: slack
         roles: ["default"]
         platforms:
