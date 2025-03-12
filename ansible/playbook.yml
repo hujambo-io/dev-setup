@@ -768,6 +768,14 @@
       when: single_app is defined
       tags: ['install']
 
+
+    - name: Debug uninstall items
+      ansible.builtin.debug:
+        msg: "Uninstalling {{ item.name }}"
+      loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | list }}{% endif %}"
+      when: ansible_facts['os_family'] == 'Darwin'
+      tags: ['uninstall']
+
     # Uninstall tasks for Linux/macOS
     - name: Uninstall universal tools on Linux
       become: "{{ item.needs_admin | default(false) }}"
@@ -780,16 +788,30 @@
       ignore_errors: true
       tags: ['uninstall']
 
+    # - name: Uninstall universal tools on macOS
+    #   become: "{{ item.needs_admin | default(false) }}"
+    #   become_user: "{{ admin_user if item.needs_admin else omit }}"
+    #   community.general.homebrew:
+    #     name: "{{ item.name }}"
+    #     state: absent
+    #   loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | list }}{% endif %}"
+    #   when: ansible_facts['os_family'] == 'Darwin'
+    #   ignore_errors: true
+    #   tags: ['uninstall']
+
     - name: Uninstall universal tools on macOS
-      become: "{{ item.needs_admin | default(false) }}"
-      become_user: "{{ admin_user if item.needs_admin else omit }}"
+      become: true
       community.general.homebrew:
         name: "{{ item.name }}"
         state: absent
       loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | list }}{% endif %}"
       when: ansible_facts['os_family'] == 'Darwin'
+      vars:
+        admin_user: "{{ admin_user if item.needs_admin else omit }}"
       ignore_errors: true
       tags: ['uninstall']
+
+
 
     # Uninstall platform-specific tools
     - name: Uninstall platform-specific tools with package manager
