@@ -734,6 +734,7 @@
       community.general.homebrew:
         name: "{{ item.name }}"
         state: present
+        install_options: force
       loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | list }}{% endif %}"
       when: ansible_facts['os_family'] == 'Darwin'
       tags: ['install']
