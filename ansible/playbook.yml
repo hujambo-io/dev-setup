@@ -11,28 +11,28 @@
         platforms:
           type: universal
         install_type: standard:git
-        needs_admin: false    # Add this field
+        needs_admin: true    # Add this field
 
       - name: wget
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:wget
-        needs_admin: false    # Add this field
+        needs_admin: true    # Add this field
 
       - name: vim
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:vim
-        needs_admin: false    # Add this field
+        needs_admin: true    # Add this field
 
       - name: htop
         roles: ["default"]
         platforms:
           type: universal
         install_type: standard:htop
-        needs_admin: false    # Add this field
+        needs_admin: true    # Add this field
 
       - name: tree
         roles: ["default"]
