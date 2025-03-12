@@ -682,9 +682,23 @@
       when: ansible_facts['os_family'] == 'Linux'
       tags: ['java-setup']
 
+    # - name: Uninstall asdf
+    #   become: "{{ item.needs_admin | default(false) }}"
+    #   become_user: "{{ admin_user if item.needs_admin else omit }}"
+    #   ansible.builtin.shell:
+    #     cmd: |
+    #       if [ "{{ ansible_facts['os_family'] }}" == "Darwin" ]; then
+    #         brew uninstall asdf
+    #       else
+    #         rm -rf ~/.asdf
+    #       fi
+    #   when: ansible_facts['os_family'] in ['Darwin', 'Linux']
+    #   tags:
+    #     - uninstall
+
+
     - name: Uninstall asdf
-      become: "{{ item.needs_admin | default(false) }}"
-      become_user: "{{ admin_user if item.needs_admin else omit }}"
+      become: false
       ansible.builtin.shell:
         cmd: |
           if [ "{{ ansible_facts['os_family'] }}" == "Darwin" ]; then
@@ -695,6 +709,7 @@
       when: ansible_facts['os_family'] in ['Darwin', 'Linux']
       tags:
         - uninstall
+
 
     # Universal tools installation
     - name: Install universal tools on Linux
