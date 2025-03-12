@@ -2,7 +2,9 @@
 - name: Setup Development Environment
   hosts: all
   vars:
-    admin_user: "{{ lookup('env', 'ADMIN_USER') }}"
+    # admin_user: "{{ lookup('env', 'ADMIN_USER') }}"
+    admin_user: "{{ lookup('env', 'ADMIN_USER') | default('root', true) }}"
+
     tools:
       - name: git
         roles: ["default"]
@@ -799,18 +801,49 @@
     #   ignore_errors: true
     #   tags: ['uninstall']
 
+    # - name: Uninstall universal tools on macOS
+    #   become: true
+    #   community.general.homebrew:
+    #     name: "{{ item.name }}"
+    #     state: absent
+    #   loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | list }}{% endif %}"
+    #   when: ansible_facts['os_family'] == 'Darwin'
+    #   vars:
+    #     admin_user: "{{ admin_user if item.needs_admin else omit }}"
+    #   ignore_errors: true
+    #   tags: ['uninstall']
+
+    - name: Debug uninstall items
+      ansible.builtin.debug:
+        msg: "Uninstalling {{ item.name }}"
+      loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | list }}{% endif %}"
+      when: ansible_facts['os_family'] == 'Darwin'
+      tags: ['uninstall']
+
+
     - name: Uninstall universal tools on macOS
-      become: true
+      become: "{{ item.needs_admin | default(false) }}"
+      become_user: "{{ admin_user if (item.needs_admin | default(false)) else omit }}"
       community.general.homebrew:
         name: "{{ item.name }}"
         state: absent
       loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | list }}{% endif %}"
-      when: ansible_facts['os_family'] == 'Darwin'
-      vars:
-        admin_user: "{{ admin_user if item.needs_admin else omit }}"
+      when:
+        - ansible_facts['os_family'] == 'Darwin'
+        - item.name is defined
       ignore_errors: true
       tags: ['uninstall']
 
+    - name: Uninstall Docker properly
+      become: true
+      ansible.builtin.shell:
+        cmd: |
+          brew uninstall --cask docker || true
+          sudo rm -rf /Applications/Docker.app
+          sudo rm -rf ~/Library/Application\ Support/Docker
+          sudo rm -rf ~/Library/Caches/com.docker.docker
+      when: ansible_facts['os_family'] == 'Darwin'
+      tags: ['uninstall']
 
 
     # Uninstall platform-specific tools
