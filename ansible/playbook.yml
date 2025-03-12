@@ -39,7 +39,7 @@
         platforms:
           type: universal
         install_type: standard:tree
-        needs_admin: false    # Add this field
+        needs_admin: true    # Add this field
 
       - name: jq
         roles: ["default"]
