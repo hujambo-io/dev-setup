@@ -46,7 +46,7 @@
         platforms:
           type: universal
         install_type: standard:jq
-        needs_admin: false    # Add this field
+        needs_admin: true    # Add this field
 
       - name: nvm
         roles: ["frontend"]
