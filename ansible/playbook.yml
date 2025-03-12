@@ -60,7 +60,7 @@
         platforms:
           type: universal
         install_type: standard:python
-        needs_admin: false    # Add this field
+        needs_admin: true    # Add this field
 
       - name: ffmpeg
         roles: ["full-stack"]
@@ -74,7 +74,7 @@
         platforms:
           type: universal
         install_type: standard:ruby
-        needs_admin: false    # Add this field
+        needs_admin: true    # Add this field
 
       - name: r
         roles: ["full-stack"]
