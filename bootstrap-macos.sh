@@ -209,7 +209,7 @@ fi
 if [[ "$ACTION" == "uninstall" ]]; then
     if [[ -n "$ROLE" ]]; then
         echo "Uninstalling tools for role: $ROLE"
-        ANSIBLE_CMD="$ANSIBLE_CMD --extra-vars role=$ROLE --tags uninstall"
+        ANSIBLE_CMD="$ANSIBLE_CMD --extra-vars role=$ROLE --tags uninstall --ask-become-pass"
     else
         echo "Uninstalling all tools"
         ANSIBLE_CMD="$ANSIBLE_CMD --tags uninstall --ask-become-pass"
