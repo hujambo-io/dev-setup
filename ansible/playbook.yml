@@ -715,20 +715,49 @@
       when: ansible_facts['os_family'] == 'Darwin'
       tags: ['install']
 
-    - name: Install Universal applications requiring admin on macOS
-      become: true
-      become_user: "{{ admin_user }}"
-      community.general.homebrew_cask:
-        name: "{{ item.name }}"
-        state: present
-        install_options: "--verbose --debug --no-quarantine"
-      async: 300  # 5 minute timeout
-      poll: 10
-      register: app_install
-      ignore_errors: true
+    - name: Debug - List apps to be installed
+      debug:
+        msg: "Will install: {{ item.name }}"
       loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('name', 'equalto', single_app) | selectattr('needs_admin', 'equalto', true) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | selectattr('needs_admin', 'equalto', true) | list }}{% endif %}"
       when:
         - ansible_facts['os_family'] == 'Darwin'
+      tags: ['install']
+
+
+    # - name: Install Universal applications requiring admin on macOS
+    #   become: true
+    #   become_user: "{{ admin_user }}"
+    #   community.general.homebrew_cask:
+    #     name: "{{ item.name }}"
+    #     state: present
+    #     install_options: "--verbose --debug --no-quarantine"
+    #   async: 300  # 5 minute timeout
+    #   poll: 10
+    #   register: app_install
+    #   ignore_errors: true
+    #   loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('name', 'equalto', single_app) | selectattr('needs_admin', 'equalto', true) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | selectattr('needs_admin', 'equalto', true) | list }}{% endif %}"
+    #   when:
+    #     - ansible_facts['os_family'] == 'Darwin'
+    #   tags: ['install']
+
+    - name: Install GUI apps with admin individually
+      become: true
+      become_user: "{{ admin_user }}"
+      ansible.builtin.shell:
+        cmd: "brew install --cask {{ item.name }} || true"
+      register: app_install_result
+      loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('name', 'equalto', single_app) | selectattr('needs_admin', 'equalto', true) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | selectattr('needs_admin', 'equalto', true) | list }}{% endif %}"
+      when:
+        - ansible_facts['os_family'] == 'Darwin'
+      tags: ['install']
+      
+    - name: Display installation results
+      debug:
+        msg: "App {{ item.item.name }} installation result: {{ item.stdout }}"
+      loop: "{{ app_install_result.results }}"
+      when:
+        - ansible_facts['os_family'] == 'Darwin'
+        - app_install_result is defined
       tags: ['install']
 
     - name: Check installation status
