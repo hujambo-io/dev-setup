@@ -518,7 +518,7 @@
       - name: notion
         roles: ["default"]
         platforms:
-          type: univeral 
+          type: universal 
         install_type: standard:notion
         needs_admin: true    # Add this field
       
@@ -657,8 +657,8 @@
 
     # Keep but modify Linux Java setup
     - name: Configure asdf for Java on Linux
-      become: "{{ item.needs_admin | default(false) }}"
-      become_user: "{{ admin_user if item.needs_admin else omit }}"
+      # become: "{{ item.needs_admin | default(false) }}"
+      # become_user: "{{ admin_user if item.needs_admin else omit }}"
       ansible.builtin.shell:
         cmd: |
           # Install asdf first if not present
@@ -681,8 +681,8 @@
       tags: ['java-setup']
 
     - name: Uninstall asdf
-      become: "{{ item.needs_admin | default(false) }}"
-      become_user: "{{ admin_user if item.needs_admin else omit }}"
+      # become: "{{ item.needs_admin | default(false) }}"
+      # become_user: "{{ admin_user if item.needs_admin else omit }}"
       ansible.builtin.shell:
         cmd: |
           if [ "{{ ansible_facts['os_family'] }}" == "Darwin" ]; then
@@ -696,8 +696,8 @@
 
     # Universal tools installation
     - name: Install universal tools on Linux
-      become: "{{ item.needs_admin | default(false) }}"
-      become_user: "{{ admin_user if item.needs_admin else omit }}"
+      # become: "{{ item.needs_admin | default(false) }}"
+      # become_user: "{{ admin_user if item.needs_admin else omit }}"
       ansible.builtin.package:
         name: "{{ item.name }}"
         state: present
@@ -706,19 +706,31 @@
       tags: ['install']
 
     - name: Install universal tools on macOS
-      become: "{{ item.needs_admin | default(false) }}"
-      become_user: "{{ admin_user if item.needs_admin else omit }}"
+      # become: "{{ item.needs_admin | default(false) }}"
+      # become_user: "{{ admin_user if item.needs_admin else omit }}"
       community.general.homebrew:
         name: "{{ item.name }}"
         state: present
       loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | list }}{% endif %}"
       when: ansible_facts['os_family'] == 'Darwin'
       tags: ['install']
-      
+
+    - name: Install Universal applications requiring admin on macOS
+      become: true
+      become_user: "{{ admin_user }}"
+      community.general.homebrew_cask:
+        name: "{{ item.name }}"
+        state: present
+      loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('name', 'equalto', single_app) | selectattr('needs_admin', 'equalto', true) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | selectattr('needs_admin', 'equalto', true) | list }}{% endif %}"
+      when: 
+        - ansible_facts['os_family'] == 'Darwin'
+      tags: ['install']
+
+
     # Install platform-specific tools
     - name: Install platform-specific tools with package manager
-      become: "{{ item.needs_admin | default(false) }}"
-      become_user: "{{ admin_user if item.needs_admin else omit }}"
+      # become: "{{ item.needs_admin | default(false) }}"
+      # become_user: "{{ admin_user if item.needs_admin else omit }}"
       ansible.builtin.package:
         name: "{{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}"
         state: present
@@ -731,8 +743,8 @@
       tags: ['install']
 
     - name: Install platform-specific tools with homebrew
-      become: "{{ item.needs_admin | default(false) }}"
-      become_user: "{{ admin_user if item.needs_admin else omit }}"
+      # become: "{{ item.needs_admin | default(false) }}"
+      # become_user: "{{ admin_user if item.needs_admin else omit }}"
       community.general.homebrew:
         name: "{{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}"
         state: present
@@ -744,9 +756,24 @@
         - ansible_facts['os_family'] == 'Darwin'
       tags: ['install']
 
+    - name: Install platform-specific GUI applications requiring admin on macOS
+      become: true
+      become_user: "{{ admin_user }}"
+      community.general.homebrew_cask:
+        name: "{{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}"
+        state: present
+      loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('name', 'equalto', single_app) | selectattr('needs_admin', 'equalto', true) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | selectattr('needs_admin', 'equalto', true) | list }}{% endif %}"
+      when: 
+        - item.platforms[ansible_facts['os_family']] is defined
+        - item.platforms[ansible_facts['os_family']]['install_type'].startswith('standard:')
+        - not item.platforms[ansible_facts['os_family']]['install_type'].startswith('special:')
+        - ansible_facts['os_family'] == 'Darwin'
+      tags: ['install']
+
+
     - name: Install platform-specific tools with shell commands
-      become: "{{ item.needs_admin | default(false) }}"
-      become_user: "{{ admin_user if item.needs_admin else omit }}"
+      # become: "{{ item.needs_admin | default(false) }}"
+      # become_user: "{{ admin_user if item.needs_admin else omit }}"
       ansible.builtin.shell:
         cmd: "{{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}"
       loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | list }}{% endif %}"
@@ -756,9 +783,23 @@
         - not item.platforms[ansible_facts['os_family']]['install_type'].startswith('special:')
       tags: ['install']
 
+    # For admin shell commands
+    - name: Install platform-specific tools with shell commands (admin)
+      become: true
+      become_user: "{{ admin_user }}"
+      ansible.builtin.shell:
+        cmd: "{{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}"
+      loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('name', 'equalto', single_app) | selectattr('needs_admin', 'equalto', true) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'platform-specific') | selectattr('roles', 'contains', role) | selectattr('needs_admin', 'equalto', true) | list }}{% endif %}"
+      when:
+        - item.platforms[ansible_facts['os_family']] is defined
+        - item.platforms[ansible_facts['os_family']]['install_type'].startswith('shell:')
+        - not item.platforms[ansible_facts['os_family']]['install_type'].startswith('special:')
+      tags: ['install']
+
+
     - name: Debug platform-specific single app
-      become: "{{ item.needs_admin | default(false) }}"
-      become_user: "{{ admin_user if item.needs_admin else omit }}"
+      # become: "{{ item.needs_admin | default(false) }}"
+      # become_user: "{{ admin_user if item.needs_admin else omit }}"
       ansible.builtin.debug:
         msg: >
           Platform: {{ ansible_facts['os_family'] }}
@@ -770,8 +811,8 @@
 
     # Uninstall tasks for Linux/macOS
     - name: Uninstall universal tools on Linux
-      become: "{{ item.needs_admin | default(false) }}"
-      become_user: "{{ admin_user if item.needs_admin else omit }}"
+      # become: "{{ item.needs_admin | default(false) }}"
+      # become_user: "{{ admin_user if item.needs_admin else omit }}"
       ansible.builtin.package:
         name: "{{ item.name }}"
         state: absent
@@ -781,8 +822,8 @@
       tags: ['uninstall']
 
     - name: Uninstall universal tools on macOS
-      become: "{{ item.needs_admin | default(false) }}"
-      become_user: "{{ admin_user if item.needs_admin else omit }}"
+      # become: "{{ item.needs_admin | default(false) }}"
+      # become_user: "{{ admin_user if item.needs_admin else omit }}"
       community.general.homebrew:
         name: "{{ item.name }}"
         state: absent
@@ -793,8 +834,8 @@
 
     # Uninstall platform-specific tools
     - name: Uninstall platform-specific tools with package manager
-      become: "{{ item.needs_admin | default(false) }}"
-      become_user: "{{ admin_user if item.needs_admin else omit }}"
+      # become: "{{ item.needs_admin | default(false) }}"
+      # become_user: "{{ admin_user if item.needs_admin else omit }}"
       ansible.builtin.package:
         name: "{{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}"
         state: absent
@@ -807,8 +848,8 @@
       tags: ['uninstall']
 
     - name: Uninstall platform-specific tools with homebrew
-      become: "{{ item.needs_admin | default(false) }}"
-      become_user: "{{ admin_user if item.needs_admin else omit }}"
+      # become: "{{ item.needs_admin | default(false) }}"
+      # become_user: "{{ admin_user if item.needs_admin else omit }}"
       community.general.homebrew:
         name: "{{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}"
         state: absent
@@ -823,8 +864,8 @@
 
     # Uninstall role-based universal tools
     - name: Uninstall role-based universal tools on Linux
-      become: "{{ item.needs_admin | default(false) }}"
-      become_user: "{{ admin_user if item.needs_admin else omit }}"
+      # become: "{{ item.needs_admin | default(false) }}"
+      # become_user: "{{ admin_user if item.needs_admin else omit }}"
       ansible.builtin.package:
         name: "{{ item.name }}"
         state: absent
@@ -835,8 +876,8 @@
 
 
     - name: Uninstall role-based universal tools on macOS
-      become: "{{ item.needs_admin | default(false) }}"
-      become_user: "{{ admin_user if item.needs_admin else omit }}"
+      # become: "{{ item.needs_admin | default(false) }}"
+      # become_user: "{{ admin_user if item.needs_admin else omit }}"
       community.general.homebrew:
         name: "{{ item.name }}"
         state: absent
@@ -847,8 +888,8 @@
 
     # Role-based uninstall
     - name: Uninstall role-based platform-specific tools with package manager
-      become: "{{ item.needs_admin | default(false) }}"
-      become_user: "{{ admin_user if item.needs_admin else omit }}"
+      # become: "{{ item.needs_admin | default(false) }}"
+      # become_user: "{{ admin_user if item.needs_admin else omit }}"
       ansible.builtin.package:
         name: "{{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}"
         state: absent
@@ -861,8 +902,8 @@
       tags: ['uninstall']
 
     - name: Uninstall role-based platform-specific tools with homebrew
-      become: "{{ item.needs_admin | default(false) }}"
-      become_user: "{{ admin_user if item.needs_admin else omit }}"
+      # become: "{{ item.needs_admin | default(false) }}"
+      # become_user: "{{ admin_user if item.needs_admin else omit }}"
       community.general.homebrew:
         name: "{{ item.platforms[ansible_facts['os_family']]['install_type'].split(':', 1)[1] }}"
         state: absent
