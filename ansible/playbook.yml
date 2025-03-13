@@ -677,45 +677,85 @@
     #   when: ansible_facts['os_family'] == 'Darwin'
     #   tags: ['java-setup']
 
-    - name: Install and configure asdf plugins
+    # - name: Install and configure asdf plugins
+    #   ansible.builtin.shell:
+    #     cmd: |
+    #       . $(brew --prefix asdf)/libexec/asdf.sh
+          
+    #       # Install plugins one by one
+    #       for plugin in java flutter; do
+    #         version=""
+    #         case $plugin in
+    #           "java") version="openjdk-21" ;;
+    #           "flutter") version="latest" ;;
+    #         esac
+            
+    #         # Install plugin if not present
+    #         asdf plugin list | grep -q "$plugin" || asdf plugin add "$plugin"
+    #         asdf install "$plugin" "$version"
+            
+    #         # Set global version (older asdf versions)
+    #         if asdf help | grep -q "global"; then
+    #           asdf global "$plugin" "$version"
+    #         else
+    #           # Newer asdf versions
+    #           asdf set -g "$plugin" "$version"
+    #         fi
+            
+    #         # Create shims
+    #         asdf reshim "$plugin"
+    #       done
+          
+    #       # Verify .tool-versions exists
+    #       if [ ! -f ~/.tool-versions ]; then
+    #         echo "java openjdk-21" > ~/.tool-versions
+    #         echo "flutter $(asdf list flutter | tail -1 | xargs)" >> ~/.tool-versions
+    #       fi
+    #     executable: /bin/bash
+    #   when: ansible_facts['os_family'] == 'Darwin'
+    #   tags: ['java-setup']
+
+    - name: Install and configure asdf plugins for Java and Flutter
       ansible.builtin.shell:
         cmd: |
           . $(brew --prefix asdf)/libexec/asdf.sh
           
-          # Install plugins one by one
-          for plugin in java flutter; do
-            version=""
-            case $plugin in
-              "java") version="openjdk-21" ;;
-              "flutter") version="latest" ;;
-            esac
-            
-            # Install plugin if not present
-            asdf plugin list | grep -q "$plugin" || asdf plugin add "$plugin"
-            asdf install "$plugin" "$version"
-            
-            # Set global version (older asdf versions)
-            if asdf help | grep -q "global"; then
-              asdf global "$plugin" "$version"
-            else
-              # Newer asdf versions
-              asdf set -g "$plugin" "$version"
-            fi
-            
-            # Create shims
-            asdf reshim "$plugin"
-          done
+          # Install Java plugin
+          asdf plugin list | grep -q "java" || asdf plugin add java
+          asdf install java openjdk-21
           
-          # Verify .tool-versions exists
+          # For Flutter, we'll use the community plugin
+          asdf plugin list | grep -q "flutter" || asdf plugin add flutter
+          
+          # Install Flutter
+          asdf install flutter latest
+          flutter_version=$(asdf list flutter | tail -1 | xargs)
+          
+          # Set as global versions
+          if asdf help | grep -q "global"; then
+            asdf global java openjdk-21
+            asdf global flutter $flutter_version
+          else
+            # Newer asdf versions
+            asdf set -g java openjdk-21
+            asdf set -g flutter $flutter_version
+          fi
+          
+          # Reshim everything
+          asdf reshim java
+          asdf reshim flutter
+          
+          # Make sure tool-versions file exists
           if [ ! -f ~/.tool-versions ]; then
             echo "java openjdk-21" > ~/.tool-versions
-            echo "flutter $(asdf list flutter | tail -1 | xargs)" >> ~/.tool-versions
+            echo "flutter $flutter_version" >> ~/.tool-versions
           fi
+          
+          # Run flutter doctor to complete setup
+          PATH="$PATH:$HOME/.asdf/installs/flutter/$flutter_version/bin" flutter doctor
         executable: /bin/bash
       when: ansible_facts['os_family'] == 'Darwin'
       tags: ['java-setup']
-
-
 
     # Keep but modify Linux Java setup
     - name: Configure asdf for Java on Linux
