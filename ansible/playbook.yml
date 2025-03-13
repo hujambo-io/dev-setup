@@ -721,11 +721,18 @@
       community.general.homebrew_cask:
         name: "{{ item.name }}"
         state: present
+        install_options: "--quiet --no-quarantine"
+      async: 600  # 10 minute timeout
+      poll: 10    # Check every 10 seconds
+      register: app_result
+      until: app_result is succeeded
+      retries: 2
+      delay: 5
+      ignore_errors: true
       loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('name', 'equalto', single_app) | selectattr('needs_admin', 'equalto', true) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | selectattr('needs_admin', 'equalto', true) | list }}{% endif %}"
-      when: 
+      when:
         - ansible_facts['os_family'] == 'Darwin'
       tags: ['install']
-
 
     # Install platform-specific tools
     - name: Install platform-specific tools with package manager
