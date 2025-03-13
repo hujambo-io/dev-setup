@@ -655,6 +655,28 @@
     #   when: ansible_facts['os_family'] == 'Darwin'
     #   tags: ['java-setup']
 
+    # - name: Install and configure asdf plugins
+    #   ansible.builtin.shell:
+    #     cmd: |
+    #       . $(brew --prefix asdf)/libexec/asdf.sh
+          
+    #       # Install plugins one by one
+    #       for plugin in java flutter; do
+    #         version=""
+    #         case $plugin in
+    #           "java") version="openjdk-21" ;;
+    #           "flutter") version="latest" ;;
+    #         esac
+            
+    #         # Install plugin if not present
+    #         asdf plugin list | grep -q "$plugin" || asdf plugin add "$plugin"
+    #         asdf install "$plugin" "$version"
+    #         asdf set "$plugin" "$version"
+    #       done
+    #     executable: /bin/bash  # Explicitly use bash
+    #   when: ansible_facts['os_family'] == 'Darwin'
+    #   tags: ['java-setup']
+
     - name: Install and configure asdf plugins
       ansible.builtin.shell:
         cmd: |
@@ -671,11 +693,28 @@
             # Install plugin if not present
             asdf plugin list | grep -q "$plugin" || asdf plugin add "$plugin"
             asdf install "$plugin" "$version"
-            asdf set "$plugin" "$version"
+            
+            # Set global version (older asdf versions)
+            if asdf help | grep -q "global"; then
+              asdf global "$plugin" "$version"
+            else
+              # Newer asdf versions
+              asdf set -g "$plugin" "$version"
+            fi
+            
+            # Create shims
+            asdf reshim "$plugin"
           done
-        executable: /bin/bash  # Explicitly use bash
+          
+          # Verify .tool-versions exists
+          if [ ! -f ~/.tool-versions ]; then
+            echo "java openjdk-21" > ~/.tool-versions
+            echo "flutter $(asdf list flutter | tail -1 | xargs)" >> ~/.tool-versions
+          fi
+        executable: /bin/bash
       when: ansible_facts['os_family'] == 'Darwin'
       tags: ['java-setup']
+
 
 
     # Keep but modify Linux Java setup
