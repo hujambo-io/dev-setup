@@ -2,7 +2,8 @@
 - name: Setup Development Environment
   hosts: all
   vars:
-    admin_user: "{{ lookup('env', 'ADMIN_USER') }}"
+    # admin_user: "{{ lookup('env', 'ADMIN_USER') }}"
+    admin_user: "{{ lookup('env', 'ADMIN_USER') | default(ansible_user_id) }}"
     tools:
       - name: git
         roles: ["default"]
@@ -380,8 +381,8 @@
         roles: ["default"]
         platforms:
           type: platform-specific
-          Darwin:
-            install_type: special:xcode_install
+          # Darwin:
+          #   install_type: special:xcode_install
           Linux:
             install_type: standard:build-essential
           Windows:
@@ -759,8 +760,8 @@
 
     # Keep but modify Linux Java setup
     - name: Configure asdf for Java on Linux
-      become: "{{ item.needs_admin | default(false) }}"
-      become_user: "{{ admin_user if item.needs_admin else omit }}"
+      # become: "{{ item.needs_admin | default(false) }}"
+      # become_user: "{{ admin_user if item.needs_admin else omit }}"
       ansible.builtin.shell:
         cmd: |
           # Install asdf first if not present
@@ -783,8 +784,8 @@
       tags: ['java-setup']
 
     - name: Uninstall asdf
-      become: "{{ item.needs_admin | default(false) }}"
-      become_user: "{{ admin_user if item.needs_admin else omit }}"
+      # become: "{{ item.needs_admin | default(false) }}"
+      # become_user: "{{ admin_user if item.needs_admin else omit }}"
       ansible.builtin.shell:
         cmd: |
           if [ "{{ ansible_facts['os_family'] }}" == "Darwin" ]; then
@@ -979,8 +980,10 @@
 
     # Bootstrap task (pre-installation)
     - name: Bootstrap environment
-      become: "{{ item.needs_admin | default(false) }}"
-      become_user: "{{ admin_user if item.needs_admin else omit }}"
+      # become: "{{ item.needs_admin | default(false) }}"
+      # become_user: "{{ admin_user if item.needs_admin else omit }}"
+      become: true
+      become_user: "{{ admin_user }}"
       ansible.builtin.shell:
         cmd: |
           if [ -d "/usr/local" ]; then
@@ -996,8 +999,10 @@
 
     # Finish task (post-installation)
     - name: Finish setup
-      become: "{{ item.needs_admin | default(false) }}"
-      become_user: "{{ admin_user if item.needs_admin else omit }}"
+      # become: "{{ item.needs_admin | default(false) }}"
+      # become_user: "{{ admin_user if item.needs_admin else omit }}"
+      become: true
+      become_user: "{{ admin_user }}"
       ansible.builtin.shell:
         cmd: |
           if [ -d "/usr/local" ]; then

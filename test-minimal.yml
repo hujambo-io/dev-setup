@@ -1,0 +1,133 @@
+---
+# Minimal Test Playbook
+# Run this first to verify everything works before the full install
+# Usage: ansible-playbook test-minimal.yml -v
+#
+# This installs just 3 safe, common tools to verify:
+# 1. Homebrew is working
+# 2. Ansible can install packages
+# 3. The become mechanism works correctly
+
+- name: Minimal Installation Test
+  hosts: localhost
+  connection: local
+  vars:
+    admin_user: "{{ lookup('env', 'ADMIN_USER') | default(ansible_user_id) }}"
+    
+  tasks:
+    - name: Display test configuration
+      ansible.builtin.debug:
+        msg: |
+          ============================================
+          MINIMAL TEST RUN
+          ============================================
+          OS: {{ ansible_facts['os_family'] }}
+          User: {{ ansible_user_id }}
+          Admin User: {{ admin_user }}
+          
+          This test will install: git, jq, tree
+          These are small, safe utilities.
+          ============================================
+
+    - name: Verify Homebrew is available (macOS)
+      ansible.builtin.shell: brew --version
+      register: brew_version
+      changed_when: false
+      when: ansible_facts['os_family'] == 'Darwin'
+
+    - name: Show Homebrew version
+      ansible.builtin.debug:
+        msg: "Homebrew: {{ brew_version.stdout_lines[0] }}"
+      when: ansible_facts['os_family'] == 'Darwin'
+
+    # Test 1: Install without admin (should work for regular user)
+    - name: "TEST 1: Install 'tree' (no admin required)"
+      community.general.homebrew:
+        name: tree
+        state: present
+      register: test1_result
+      when: ansible_facts['os_family'] == 'Darwin'
+
+    - name: TEST 1 Result
+      ansible.builtin.debug:
+        msg: "TEST 1 (no admin): {{ 'PASSED' if test1_result is succeeded else 'FAILED' }}"
+      when: ansible_facts['os_family'] == 'Darwin'
+
+    # Test 2: Install another tool without admin
+    - name: "TEST 2: Install 'jq' (no admin required)"
+      community.general.homebrew:
+        name: jq
+        state: present
+      register: test2_result
+      when: ansible_facts['os_family'] == 'Darwin'
+
+    - name: TEST 2 Result
+      ansible.builtin.debug:
+        msg: "TEST 2 (no admin): {{ 'PASSED' if test2_result is succeeded else 'FAILED' }}"
+      when: ansible_facts['os_family'] == 'Darwin'
+
+    # Test 3: Install with become (tests admin escalation)
+    - name: "TEST 3: Install 'git' (with become)"
+      community.general.homebrew:
+        name: git
+        state: present
+      become: true
+      become_user: "{{ admin_user }}"
+      register: test3_result
+      when: ansible_facts['os_family'] == 'Darwin'
+
+    - name: TEST 3 Result
+      ansible.builtin.debug:
+        msg: "TEST 3 (with become): {{ 'PASSED' if test3_result is succeeded else 'FAILED' }}"
+      when: ansible_facts['os_family'] == 'Darwin'
+
+    # Verify installations
+    - name: Verify 'tree' is installed
+      ansible.builtin.shell: which tree && tree --version
+      register: tree_check
+      changed_when: false
+      ignore_errors: true
+
+    - name: Verify 'jq' is installed
+      ansible.builtin.shell: which jq && jq --version
+      register: jq_check
+      changed_when: false
+      ignore_errors: true
+
+    - name: Verify 'git' is installed
+      ansible.builtin.shell: which git && git --version
+      register: git_check
+      changed_when: false
+      ignore_errors: true
+
+    - name: Final Test Summary
+      ansible.builtin.debug:
+        msg: |
+          
+          ============================================
+          TEST RESULTS
+          ============================================
+          tree: {{ 'INSTALLED ✓' if tree_check.rc == 0 else 'FAILED ✗' }}
+                {{ tree_check.stdout_lines | default(['']) | last }}
+          
+          jq:   {{ 'INSTALLED ✓' if jq_check.rc == 0 else 'FAILED ✗' }}
+                {{ jq_check.stdout_lines | default(['']) | last }}
+          
+          git:  {{ 'INSTALLED ✓' if git_check.rc == 0 else 'FAILED ✗' }}
+                {{ git_check.stdout_lines | default(['']) | last }}
+          ============================================
+          
+          {% if tree_check.rc == 0 and jq_check.rc == 0 and git_check.rc == 0 %}
+          ALL TESTS PASSED! ✓
+          
+          You can now safely run the full installation:
+            ./bootstrap-macos-clean.sh --role default
+          {% else %}
+          SOME TESTS FAILED ✗
+          
+          Check the errors above before running full installation.
+          Common fixes:
+          - Homebrew permissions: sudo chown -R $(whoami) /opt/homebrew
+          - Missing Xcode CLI: xcode-select --install
+          {% endif %}
+          ============================================
