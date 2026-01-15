@@ -249,4 +249,7 @@ if [[ -n "$TEMP_DIR" ]]; then
     rm -rf "$TEMP_DIR"
 fi
 
-echo "Setup completed successfully!"
+# At the end, before "Setup completed successfully!"
+kill $SUDO_KEEPALIVE_PID 2>/dev/null
+
+echo "Setup completed successfully! You can now safely close this terminal."
