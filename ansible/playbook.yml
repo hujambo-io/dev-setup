@@ -346,17 +346,30 @@
         install_type: standard:font-fira-code
         needs_admin: true    # Add this field
 
+      # - name: syncthing
+      #   roles: ["default"]
+      #   platforms:
+      #     type: platform-specific
+      #     Darwin:
+      #       install_type: syncthing:syncthing
+      #     Linux:
+      #       install_type: standard:syncthing
+      #     Windows:
+      #       install_type: standard:syncthing
+      #   needs_admin: true    # Add this field
+
       - name: syncthing
         roles: ["default"]
         platforms:
           type: platform-specific
           Darwin:
-            install_type: syncthing:syncthing
+            install_type: shell:brew install --cask syncthing
           Linux:
             install_type: standard:syncthing
           Windows:
             install_type: standard:syncthing
-        needs_admin: true    # Add this field
+        needs_admin: true
+
 
       - name: cypher-shell
         roles: ["full-stack"]
@@ -376,6 +389,14 @@
           Windows:
             install_type: shell:choco install protoc -y
         needs_admin: false    # Add this field
+
+
+      - name: ollama
+        roles: ["full-stack"]
+        platforms:
+          type: universal
+        install_type: standard:ollama
+        needs_admin: false
 
       - name: build-essential
         roles: ["default"]
