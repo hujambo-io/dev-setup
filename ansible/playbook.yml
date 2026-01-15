@@ -519,7 +519,7 @@
       - name: notion
         roles: ["default"]
         platforms:
-          type: univeral 
+          type: universal 
         install_type: standard:notion
         needs_admin: true    # Add this field
       
@@ -598,6 +598,7 @@
       args:
         executable: /bin/bash
       when: ansible_facts['os_family'] == 'Darwin'
+      ignore_errors: true
       tags:
         - xcode-setup
 
@@ -620,6 +621,7 @@
       args:
         executable: /bin/bash
       when: ansible_facts['os_family'] == 'Linux'
+      ignore_errors: true
       tags: ['java-setup']
 
     - name: Configure asdf shell integration
@@ -632,89 +634,8 @@
       when: 
         - ansible_facts['os_family'] == 'Darwin'
         - ansible_user_shell == '/bin/zsh'
+      ignore_errors: true
       tags: ['java-setup']
-
-    # - name: Install and configure asdf plugins
-    #   ansible.builtin.shell:
-    #     cmd: |
-    #       . $(brew --prefix asdf)/libexec/asdf.sh
-          
-    #       # Install plugins one by one
-    #       for plugin in java flutter; do
-    #         version=""
-    #         case $plugin in
-    #           "java") version="openjdk-21" ;;
-    #           "flutter") version="latest" ;;
-    #         esac
-            
-    #         # Install plugin if not present
-    #         asdf plugin list | grep -q "$plugin" || asdf plugin add "$plugin"
-    #         asdf install "$plugin" "$version"
-    #         asdf global "$plugin" "$version"
-    #       done
-    #     executable: /bin/bash  # Explicitly use bash
-    #   when: ansible_facts['os_family'] == 'Darwin'
-    #   tags: ['java-setup']
-
-    # - name: Install and configure asdf plugins
-    #   ansible.builtin.shell:
-    #     cmd: |
-    #       . $(brew --prefix asdf)/libexec/asdf.sh
-          
-    #       # Install plugins one by one
-    #       for plugin in java flutter; do
-    #         version=""
-    #         case $plugin in
-    #           "java") version="openjdk-21" ;;
-    #           "flutter") version="latest" ;;
-    #         esac
-            
-    #         # Install plugin if not present
-    #         asdf plugin list | grep -q "$plugin" || asdf plugin add "$plugin"
-    #         asdf install "$plugin" "$version"
-    #         asdf set "$plugin" "$version"
-    #       done
-    #     executable: /bin/bash  # Explicitly use bash
-    #   when: ansible_facts['os_family'] == 'Darwin'
-    #   tags: ['java-setup']
-
-    # - name: Install and configure asdf plugins
-    #   ansible.builtin.shell:
-    #     cmd: |
-    #       . $(brew --prefix asdf)/libexec/asdf.sh
-          
-    #       # Install plugins one by one
-    #       for plugin in java flutter; do
-    #         version=""
-    #         case $plugin in
-    #           "java") version="openjdk-21" ;;
-    #           "flutter") version="latest" ;;
-    #         esac
-            
-    #         # Install plugin if not present
-    #         asdf plugin list | grep -q "$plugin" || asdf plugin add "$plugin"
-    #         asdf install "$plugin" "$version"
-            
-    #         # Set global version (older asdf versions)
-    #         if asdf help | grep -q "global"; then
-    #           asdf global "$plugin" "$version"
-    #         else
-    #           # Newer asdf versions
-    #           asdf set -g "$plugin" "$version"
-    #         fi
-            
-    #         # Create shims
-    #         asdf reshim "$plugin"
-    #       done
-          
-    #       # Verify .tool-versions exists
-    #       if [ ! -f ~/.tool-versions ]; then
-    #         echo "java openjdk-21" > ~/.tool-versions
-    #         echo "flutter $(asdf list flutter | tail -1 | xargs)" >> ~/.tool-versions
-    #       fi
-    #     executable: /bin/bash
-    #   when: ansible_facts['os_family'] == 'Darwin'
-    #   tags: ['java-setup']
 
     - name: Install and configure asdf plugins for Java and Flutter
       ansible.builtin.shell:
@@ -756,6 +677,7 @@
           PATH="$PATH:$HOME/.asdf/installs/flutter/$flutter_version/bin" flutter doctor
         executable: /bin/bash
       when: ansible_facts['os_family'] == 'Darwin'
+      ignore_errors: true
       tags: ['java-setup']
 
     # Keep but modify Linux Java setup
@@ -781,6 +703,7 @@
       args:
         executable: /bin/bash
       when: ansible_facts['os_family'] == 'Linux'
+      ignore_errors: true
       tags: ['java-setup']
 
     - name: Uninstall asdf
@@ -794,6 +717,7 @@
             rm -rf ~/.asdf
           fi
       when: ansible_facts['os_family'] in ['Darwin', 'Linux']
+      ignore_errors: true
       tags:
         - uninstall
 
@@ -806,6 +730,7 @@
         state: present
       loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | list }}{% endif %}"
       when: ansible_facts['os_family'] == 'Linux'
+      ignore_errors: true
       tags: ['install']
 
     - name: Install universal tools on macOS
@@ -816,6 +741,7 @@
         state: present
       loop: "{% if single_app is defined %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('name', 'equalto', single_app) | list }}{% else %}{{ tools | selectattr('platforms.type', 'equalto', 'universal') | selectattr('roles', 'contains', role) | list }}{% endif %}"
       when: ansible_facts['os_family'] == 'Darwin'
+      ignore_errors: true
       tags: ['install']
       
     # Install platform-specific tools
@@ -831,6 +757,7 @@
         - item.platforms[ansible_facts['os_family']]['install_type'].startswith('standard:')
         - not item.platforms[ansible_facts['os_family']]['install_type'].startswith('special:')
         - ansible_facts['os_family'] == 'Linux'
+      ignore_errors: true
       tags: ['install']
 
     - name: Install platform-specific tools with homebrew
@@ -845,6 +772,7 @@
         - item.platforms[ansible_facts['os_family']]['install_type'].startswith('standard:')
         - not item.platforms[ansible_facts['os_family']]['install_type'].startswith('special:')
         - ansible_facts['os_family'] == 'Darwin'
+      ignore_errors: true
       tags: ['install']
 
     - name: Install platform-specific tools with shell commands
@@ -857,6 +785,7 @@
         - item.platforms[ansible_facts['os_family']] is defined
         - item.platforms[ansible_facts['os_family']]['install_type'].startswith('shell:')
         - not item.platforms[ansible_facts['os_family']]['install_type'].startswith('special:')
+      ignore_errors: true
       tags: ['install']
 
     - name: Debug platform-specific single app
@@ -995,6 +924,7 @@
             chmod -R g+rwx /opt/homebrew/*
           fi
       when: ansible_facts['os_family'] == 'Darwin'
+      ignore_errors: true
       tags: ['bootstrap']
 
     # Finish task (post-installation)
@@ -1015,12 +945,14 @@
           fi
         executable: /bin/bash  # Add this line
       when: ansible_facts['os_family'] == 'Darwin'
+      ignore_errors: true
       tags: ['finish']
 
     - name: Check if project structure exists
       ansible.builtin.stat:
         path: "~/Developer/01-ToSync/01-50-Projects/00-ProjectTemplate"
       register: project_template_dir
+      ignore_errors: true
       tags: ['setup']
 
     - name: Create base project directories
@@ -1083,4 +1015,5 @@
         - ~/Developer/09-NoSync/09-50-Projects/00-ProjectTemplate/07-Deliverables/05-TechnicalSpecs
         - ~/Developer/09-NoSync/09-50-Projects/00-ProjectTemplate/07-Deliverables/06-FinalReport
         - ~/Developer/09-NoSync/09-50-Projects/00-ProjectTemplate/07-Deliverables/07-Presentations
+      ignore_errors: true
       tags: ['setup']

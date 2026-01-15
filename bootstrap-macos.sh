@@ -3,6 +3,12 @@
 # Exit on error
 set -e
 
+# Pre-authenticate and keep sudo alive in background
+sudo -v
+while true; do sudo -n true; sleep 50; kill -0 "$$" || exit; done 2>/dev/null &
+SUDO_KEEPALIVE_PID=$!
+
+
 # Handle direct installation
 SCRIPT_SOURCE="https://github.com/hujambo-io/dev-setup.git"
 TEMP_DIR=""
